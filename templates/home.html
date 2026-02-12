@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome - Appointment Scheduler{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 5rem 0;">
+    <div class="container text-center">
+        <h1 style="font-size: 3rem; margin-bottom: 1rem; color: white;">Schedule Your Appointments with Ease</h1>
+        <p style="font-size: 1.25rem; margin-bottom: 2rem; color: rgba(255,255,255,0.9);">
+            Professional appointment booking system for all your scheduling needs
+        </p>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn btn-primary btn-lg" style="background: white; color: #2563eb; margin-right: 1rem;">Get Started</a>
+            <a href="{% url 'login' %}" class="btn btn-outline btn-lg" style="border-color: white; color: white;">Login</a>
+        {% else %}
+            <a href="{% url 'appointment_create' %}" class="btn btn-primary btn-lg" style="background: white; color: #2563eb;">Book Appointment</a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section style="padding: 4rem 0;">
+    <div class="container">
+        <h2 class="text-center" style="margin-bottom: 3rem;">Why Choose Us?</h2>
+        
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">⚡</div>
+                    <h3>Quick Booking</h3>
+                    <p style="color: #64748b;">Schedule appointments in seconds with our streamlined booking process.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body text-center">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📱</div>
+                    <h3>Real-time Updates</h3>
+                    <p style="color: #64748b;">Get instant notifications about your appointment status.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body text-center">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+                    <h3>Secure & Private</h3>
+                    <p style="color: #64748b;">Your data is protected with enterprise-level security.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section style="background: #f8fafc; padding: 4rem 0;">
+    <div class="container">
+        <h2 class="text-center" style="margin-bottom: 3rem;">How It Works</h2>
+        
+        <div class="grid-3">
+            <div class="text-center">
+                <div style="background: #2563eb; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; font-weight: bold;">1</div>
+                <h4>Register & Login</h4>
+                <p style="color: #64748b;">Create your account in less than a minute.</p>
+            </div>
+            
+            <div class="text-center">
+                <div style="background: #2563eb; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; font-weight: bold;">2</div>
+                <h4>Choose Service</h4>
+                <p style="color: #64748b;">Browse and select from our available services.</p>
+            </div>
+            
+            <div class="text-center">
+                <div style="background: #2563eb; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; font-weight: bold;">3</div>
+                <h4>Book & Confirm</h4>
+                <p style="color: #64748b;">Pick your time slot and get instant confirmation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

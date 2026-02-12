@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Appointment - Appointment Scheduler{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 700px; margin-top: 3rem; margin-bottom: 3rem;">
+    <div class="card">
+        <div class="card-header">
+            <h2 style="margin: 0;">
+                {% if object %}
+                    Edit Appointment
+                {% else %}
+                    Book New Appointment
+                {% endif %}
+            </h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.service.id_for_label }}" class="form-label">Service *</label>
+                    {{ form.service }}
+                    {% if form.service.errors %}
+                        <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                            {{ form.service.errors.0 }}
+                        </div>
+                    {% endif %}
+                    <small class="form-text">Select the service you want to book</small>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="{{ form.appointment_date.id_for_label }}" class="form-label">Date *</label>
+                        {{ form.appointment_date }}
+                        {% if form.appointment_date.errors %}
+                            <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                                {{ form.appointment_date.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.appointment_time.id_for_label }}" class="form-label">Time *</label>
+                        {{ form.appointment_time }}
+                        {% if form.appointment_time.errors %}
+                            <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                                {{ form.appointment_time.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.notes.id_for_label }}" class="form-label">Additional Notes</label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                            {{ form.notes.errors.0 }}
+                        </div>
+                    {% endif %}
+                    <small class="form-text">Any special requirements or information we should know</small>
+                </div>
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors.0 }}
+                    </div>
+                {% endif %}
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        {% if object %}Update Appointment{% else %}Book Appointment{% endif %}
+                    </button>
+                    <a href="{% url 'user_dashboard' %}" class="btn btn-secondary" style="flex: 1;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Information Card -->
+    <div class="card mt-2">
+        <div class="card-body">
+            <h4>📋 Booking Information</h4>
+            <ul style="color: #64748b; line-height: 1.8;">
+                <li>Your appointment will be <strong>pending</strong> until approved by an admin</li>
+                <li>You will be notified once your appointment is approved or rejected</li>
+                <li>You can modify or cancel pending appointments from your dashboard</li>
+                <li>Please arrive 10 minutes before your scheduled time</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

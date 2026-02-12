@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Appointment Scheduler{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 500px; margin-top: 3rem; margin-bottom: 3rem;">
+    <div class="card">
+        <div class="card-header text-center">
+            <h2 style="margin: 0;">Welcome Back</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                            {{ form.username.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                            {{ form.password.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors.0 }}
+                    </div>
+                {% endif %}
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+        </div>
+        <div class="card-footer text-center">
+            <p style="margin: 0; color: #64748b;">
+                Don't have an account? <a href="{% url 'register' %}">Register here</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Cancel Appointment - Appointment Scheduler{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin-top: 3rem; margin-bottom: 3rem;">
+    <div class="card">
+        <div class="card-header">
+            <h2 style="margin: 0; color: #ef4444;">⚠️ Cancel Appointment</h2>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <strong>Are you sure you want to cancel this appointment?</strong>
+            </div>
+            
+            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; margin: 1.5rem 0;">
+                <h4>Appointment Details</h4>
+                <p><strong>Service:</strong> {{ appointment.service.name }}</p>
+                <p><strong>Date:</strong> {{ appointment.appointment_date|date:"F d, Y" }}</p>
+                <p><strong>Time:</strong> {{ appointment.appointment_time|time:"g:i A" }}</p>
+                <p style="margin: 0;"><strong>Status:</strong> <span class="badge badge-{{ appointment.status }}">{{ appointment.get_status_display }}</span></p>
+            </div>
+            
+            <p style="color: #64748b;">This action cannot be undone. The appointment will be permanently removed.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-danger" style="flex: 1;">Yes, Cancel Appointment</button>
+                    <a href="{% url 'appointment_detail' appointment.pk %}" class="btn btn-secondary" style="flex: 1;">No, Keep It</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Appointment Details - Appointment Scheduler{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin-top: 3rem; margin-bottom: 3rem;">
+    <div class="card">
+        <div class="card-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0;">Appointment Details</h2>
+                <span class="badge badge-{{ appointment.status }}" style="font-size: 1rem;">
+                    {{ appointment.get_status_display }}
+                </span>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Service Information -->
+            <div style="margin-bottom: 2rem;">
+                <h4 style="color: #64748b; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Service</h4>
+                <h3>{{ appointment.service.name }}</h3>
+                <p style="color: #64748b;">{{ appointment.service.description }}</p>
+                <div style="display: flex; gap: 2rem; margin-top: 1rem;">
+                    <div>
+                        <span style="color: #64748b;">Duration:</span>
+                        <strong>{{ appointment.service.duration_display }}</strong>
+                    </div>
+                    <div>
+                        <span style="color: #64748b;">Price:</span>
+                        <strong style="color: #2563eb;">${{ appointment.service.price }}</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Appointment Information -->
+            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                <div class="grid-2">
+                    <div>
+                        <h4 style="color: #64748b; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Date</h4>
+                        <p style="font-size: 1.125rem; font-weight: 600; margin: 0;">{{ appointment.appointment_date|date:"F d, Y" }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #64748b; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Time</h4>
+                        <p style="font-size: 1.125rem; font-weight: 600; margin: 0;">{{ appointment.appointment_time|time:"g:i A" }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User Information (for admin) -->
+            {% if user.is_admin_user %}
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: #64748b; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">User Information</h4>
+                    <p><strong>Name:</strong> {{ appointment.user.first_name }} {{ appointment.user.last_name }}</p>
+                    <p><strong>Email:</strong> {{ appointment.user.email }}</p>
+                    {% if appointment.user.phone %}
+                        <p><strong>Phone:</strong> {{ appointment.user.phone }}</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <!-- Notes -->
+            {% if appointment.notes %}
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: #64748b; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">User Notes</h4>
+                    <p style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem;">{{ appointment.notes }}</p>
+                </div>
+            {% endif %}
+            
+            <!-- Admin Notes -->
+            {% if appointment.admin_notes %}
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: #64748b; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Admin Notes</h4>
+                    <div class="alert alert-info">
+                        {{ appointment.admin_notes }}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Timestamps -->
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 1rem; color: #64748b; font-size: 0.875rem;">
+                <p><strong>Booked on:</strong> {{ appointment.created_at|date:"F d, Y g:i A" }}</p>
+                <p><strong>Last updated:</strong> {{ appointment.updated_at|date:"F d, Y g:i A" }}</p>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                {% if user.is_admin_user %}
+                    {% if appointment.status == 'pending' %}
+                        <a href="{% url 'appointment_approve' appointment.pk %}" class="btn btn-success">✓ Approve</a>
+                        <a href="{% url 'appointment_reject' appointment.pk %}" class="btn btn-danger">✗ Reject</a>
+                    {% endif %}
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline">Back to Dashboard</a>
+                {% else %}
+                    {% if appointment.status == 'pending' %}
+                        <a href="{% url 'appointment_update' appointment.pk %}" class="btn btn-secondary">Edit Appointment</a>
+                    {% endif %}
+                    <a href="{% url 'appointment_delete' appointment.pk %}" class="btn btn-danger">Cancel Appointment</a>
+                    <a href="{% url 'user_dashboard' %}" class="btn btn-outline">Back to Dashboard</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

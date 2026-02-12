@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}My Appointments - Appointment Scheduler{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 3rem; margin-bottom: 3rem;">
+    <div class="text-center mb-3">
+        <h1>
+            {% if user.is_admin_user %}
+                All Appointments
+            {% else %}
+                My Appointments
+            {% endif %}
+        </h1>
+        <p style="color: #64748b; font-size: 1.125rem;">View and manage your appointment bookings</p>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            {% if appointments %}
+                <div style="overflow-x: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                {% if user.is_admin_user %}
+                                    <th>User</th>
+                                {% endif %}
+                                <th>Service</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Booked On</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in appointments %}
+                                <tr>
+                                    {% if user.is_admin_user %}
+                                        <td>{{ appointment.user.first_name }} {{ appointment.user.last_name }}</td>
+                                    {% endif %}
+                                    <td><strong>{{ appointment.service.name }}</strong></td>
+                                    <td>{{ appointment.appointment_date|date:"M d, Y" }}</td>
+                                    <td>{{ appointment.appointment_time|time:"g:i A" }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ appointment.status }}">
+                                            {{ appointment.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ appointment.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                            <a href="{% url 'appointment_detail' appointment.pk %}" 
+                                               class="btn btn-sm btn-primary">View</a>
+                                            
+                                            {% if user.is_admin_user %}
+                                                {% if appointment.status == 'pending' %}
+                                                    <a href="{% url 'appointment_approve' appointment.pk %}" 
+                                                       class="btn btn-sm btn-success">Approve</a>
+                                                    <a href="{% url 'appointment_reject' appointment.pk %}" 
+                                                       class="btn btn-sm btn-danger">Reject</a>
+                                                {% endif %}
+                                            {% else %}
+                                                {% if appointment.status == 'pending' %}
+                                                    <a href="{% url 'appointment_update' appointment.pk %}" 
+                                                       class="btn btn-sm btn-secondary">Edit</a>
+                                                {% endif %}
+                                                <a href="{% url 'appointment_delete' appointment.pk %}" 
+                                                   class="btn btn-sm btn-danger">Cancel</a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if is_paginated %}
+                    <div class="text-center mt-2">
+                        <div style="display: inline-flex; gap: 0.5rem;">
+                            {% if page_obj.has_previous %}
+                                <a href="?page=1" class="btn btn-outline btn-sm">First</a>
+                                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline btn-sm">Previous</a>
+                            {% endif %}
+                            
+                            <span class="btn btn-primary btn-sm">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                            
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline btn-sm">Next</a>
+                                <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline btn-sm">Last</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="text-center" style="padding: 3rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">📅</div>
+                    <h3>No Appointments Found</h3>
+                    <p style="color: #64748b; margin-bottom: 1.5rem;">
+                        {% if user.is_admin_user %}
+                            No appointments have been booked yet.
+                        {% else %}
+                            You haven't booked any appointments yet. Get started now!
+                        {% endif %}
+                    </p>
+                    {% if not user.is_admin_user %}
+                        <a href="{% url 'appointment_create' %}" class="btn btn-primary">Book Your First Appointment</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

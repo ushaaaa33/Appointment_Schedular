@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Appointment Scheduler{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<div class="dashboard-header">
+    <div class="container">
+        <h1 class="dashboard-title">Welcome, {{ user.first_name|default:user.username }}! 👋</h1>
+        <p class="dashboard-subtitle">Manage your appointments and view your booking history</p>
+    </div>
+</div>
+
+<div class="container" style="margin-bottom: 3rem;">
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Appointments</div>
+            <div class="stat-value">{{ total_appointments }}</div>
+        </div>
+        
+        <div class="stat-card pending">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value">{{ pending_appointments }}</div>
+        </div>
+        
+        <div class="stat-card approved">
+            <div class="stat-label">Approved</div>
+            <div class="stat-value">{{ approved_appointments }}</div>
+        </div>
+        
+        <div class="stat-card rejected">
+            <div class="stat-label">Rejected</div>
+            <div class="stat-value">{{ rejected_appointments }}</div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="card mb-2">
+        <div class="card-header">
+            <h3 style="margin: 0;">Quick Actions</h3>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="{% url 'appointment_create' %}" class="btn btn-primary">📅 Book New Appointment</a>
+                <a href="{% url 'service_list' %}" class="btn btn-outline">🔍 Browse Services</a>
+                <a href="{% url 'appointment_list' %}" class="btn btn-secondary">📋 View All Appointments</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Appointments -->
+    <div class="card">
+        <div class="card-header">
+            <h3 style="margin: 0;">Recent Appointments</h3>
+        </div>
+        <div class="card-body">
+            {% if appointments %}
+                <div style="overflow-x: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in appointments %}
+                                <tr>
+                                    <td><strong>{{ appointment.service.name }}</strong></td>
+                                    <td>{{ appointment.appointment_date }}</td>
+                                    <td>{{ appointment.appointment_time|time:"g:i A" }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ appointment.status }}">
+                                            {{ appointment.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'appointment_detail' appointment.pk %}" class="btn btn-sm btn-primary">View</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-center mt-2">
+                    <a href="{% url 'appointment_list' %}" class="btn btn-outline">View All Appointments</a>
+                </div>
+            {% else %}
+                <div class="text-center" style="padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+                    <h4>No Appointments Yet</h4>
+                    <p style="color: #64748b; margin-bottom: 1rem;">Get started by booking your first appointment!</p>
+                    <a href="{% url 'appointment_create' %}" class="btn btn-primary">Book Appointment</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
