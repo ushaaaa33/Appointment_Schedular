@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 Views for appointment management.
 Includes CRUD operations and status management.
@@ -10,8 +9,9 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
-from .models import Appointment
+from .models import Appointment, Service, TimeSlot
 from .forms import AppointmentForm
+from datetime import datetime
 
 
 @method_decorator(login_required, name='dispatch')
@@ -127,3 +127,75 @@ def appointment_reject(request, pk):
     
     messages.success(request, 'Appointment rejected.')
     return redirect('admin_dashboard')
+
+def get_available_time_slots(request, service_id):
+    """
+    Get available time slots for a specific service and date.
+    Returns JSON response with available slots.
+    """
+    service = get_object_or_404(Service, pk=service_id, is_active=True)
+    date_str = request.GET.get('date')
+    
+    if not date_str:
+        return JsonResponse({'error': 'Date parameter is required'}, status=400)
+    
+    try:
+        appointment_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return JsonResponse({'error': 'Invalid date format. Use YYYY-MM-DD'}, status=400)
+    
+    # Check if date is in the past
+    if appointment_date < datetime.now().date():
+        return JsonResponse({'available_slots': []})
+    
+    # Get day of week (0=Monday, 6=Sunday)
+    day_of_week = appointment_date.weekday()
+    
+    # Get all time slots for this service on this day
+    time_slots = TimeSlot.objects.filter(
+        service=service,
+        day_of_week=day_of_week,
+        is_available=True
+    ).order_by('start_time')
+    
+    available_slots = []
+    
+    for slot in time_slots:
+        # Count existing appointments for this slot
+        existing_appointments = Appointment.objects.filter(
+            service=service,
+            appointment_date=appointment_date,
+            appointment_time=slot.start_time,
+            status__in=['pending', 'approved']
+        ).count()
+        
+        # Calculate available capacity
+        available_capacity = slot.max_appointments - existing_appointments
+        
+        if available_capacity > 0:
+            available_slots.append({
+                'id': slot.id,
+                'start_time': slot.start_time.strftime('%H:%M'),
+                'end_time': slot.end_time.strftime('%H:%M'),
+                'display_time': slot.start_time.strftime('%I:%M %p'),
+                'available_capacity': available_capacity,
+                'max_appointments': slot.max_appointments
+            })
+    
+    return JsonResponse({
+        'service': service.name,
+        'date': date_str,
+        'day_of_week': appointment_date.strftime('%A'),
+        'available_slots': available_slots
+    })
+
+
+def book_appointment_view(request):
+    """
+    Display the appointment booking form with available services.
+    """
+    services = Service.objects.filter(is_active=True)
+    context = {
+        'services': services
+    }
+    return render(request, 'appointments/book_appointment.html', context )

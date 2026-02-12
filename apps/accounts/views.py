@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 Views for user authentication and profile management.
 """

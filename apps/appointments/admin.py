@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Appointment
+from .models import Appointment, TimeSlot
+
+
+admin.site.register(TimeSlot)
 
 
 @admin.register(Appointment)

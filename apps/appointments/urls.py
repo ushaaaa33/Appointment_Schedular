@@ -12,4 +12,6 @@ urlpatterns = [
     path('<int:pk>/delete/', views.AppointmentDeleteView.as_view(), name='appointment_delete'),
     path('<int:pk>/approve/', views.appointment_approve, name='appointment_approve'),
     path('<int:pk>/reject/', views.appointment_reject, name='appointment_reject'),
+    path('book/', views.book_appointment_view, name='book_appointment'),
+    path('api/slots/<int:service_id>/', views.get_available_time_slots, name='get_available_slots')
 ]
