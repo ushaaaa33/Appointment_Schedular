@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 Views for appointment management.
 Includes CRUD operations and status management.

@@ -1,16 +1,29 @@
+"""
+Views for displaying and managing services.
+"""
 from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, DetailView
 from .models import Service
 
 
-def service_list(request):
-    services = Service.objects.filter(is_active=True).order_by("name")
-    return render(request, "services/service_list.html", {
-        "services": services
-    })
+class ServiceListView(ListView):
+    """View for listing all active services."""
+    
+    model = Service
+    template_name = 'services/service_list.html'
+    context_object_name = 'services'
+    paginate_by = 9
+    
+    def get_queryset(self):
+        return Service.objects.filter(is_active=True)
 
 
-def service_detail(request, pk):
-    service = get_object_or_404(Service, pk=pk, is_active=True)
-    return render(request, "services/service_detail.html", {
-        "service": service
-    })
+class ServiceDetailView(DetailView):
+    """View for displaying service details."""
+    
+    model = Service
+    template_name = 'services/service_detail.html'
+    context_object_name = 'service'
+    
+    def get_queryset(self):
+        return Service.objects.filter(is_active=True)
