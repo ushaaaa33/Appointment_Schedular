@@ -5,6 +5,47 @@ from datetime import datetime
 from apps.services.models import Service
 
 
+class Weekday(models.Model):
+    # To set multiple days for the appointments
+    WEEKDAY_CHOICES = [
+        (0, "Monday"),
+        (1, "Tuesday"),
+        (2, "Wednesday"),
+        (3, "Thursday"),
+        (4, "Friday"),
+        (5, "Saturday"),
+        (6, "Sunday"),
+    ]
+
+    day = models.IntegerField(choices=WEEKDAY_CHOICES, unique=True)
+
+    def __str__(self):
+        return dict(self.WEEKDAY_CHOICES)[self.day]
+
+
+class TimeSlot(models.Model):
+    # TimeSlot model for managing available booking times
+
+    service = models.ForeignKey(
+        Service,
+        on_delete=models.CASCADE,
+        related_name='time_slots'
+    )
+    day_of_week = models.ManyToManyField(
+        Weekday,
+        related_name='time_slots'
+    )
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    max_appointments = models.PositiveIntegerField(default=1)
+    is_available = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        days = ", ".join([str(day) for day in self.day_of_week.all()])
+        return f"{self.service.name} - {days}"
+
 class Appointment(models.Model):
     """Appointment model for managing user bookings."""
     
