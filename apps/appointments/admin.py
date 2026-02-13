@@ -1,6 +1,9 @@
 from django.contrib import admin
-from .models import Appointment
+from .models import Appointment, TimeSlot, Weekday
 
+
+admin.site.register(TimeSlot)
+admin.site.register(Weekday)
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
