@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 700px; margin-top: 3rem;">
+    <div class="card">
+        <div class="card-header text-center">
+            <h3>My Profile</h3>
+        </div>
+
+        <div class="card-body">
+            <!-- Profile picture -->
+            <div class="text-center mb-4">
+                {% if user_obj.profile_picture %}
+                    <img src="{{ user_obj.profile_picture.url }}"
+                         alt="Profile Picture"
+                         style="width:120px; height:120px; border-radius:50%; object-fit:cover;">
+                {% else %}
+                    <div style="width:120px; height:120px; border-radius:50%; background:#e5e7eb; display:inline-flex; align-items:center; justify-content:center;">
+                        No Image
+                    </div>
+                {% endif %}
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>First Name</label>
+                        {{ form.first_name }}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Last Name</label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Email</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="mb-3">
+                    <label>Phone</label>
+                    {{ form.phone }}
+                </div>
+
+                <div class="mb-3">
+                    <label>Profile Picture</label>
+                    {{ form.profile_picture }}
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

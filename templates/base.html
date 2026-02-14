@@ -36,7 +36,11 @@
                         {% else %}
                             <li><a href="{% url 'user_dashboard' %}" class="nav-link">Dashboard</a></li>
                         {% endif %}
-                        
+                         <li>
+                            <a href="{% url 'profile' %}" class="nav-link">
+                                My Profile
+                            </a>
+                        </li>
                         <li><a href="{% url 'logout' %}" class="nav-link">Logout</a></li>
                     {% else %}
                         <li><a href="{% url 'service_list' %}" class="nav-link">Services</a></li>

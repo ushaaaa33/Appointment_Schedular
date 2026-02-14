@@ -1,5 +1,21 @@
+#vitrual environments
 env/
-__pycache__/
+.venv/
+
+#python cache
+__pychace__/
 *.pyc
+
+#environment variables
+.env
+
+#django
 db.sqlite3
 media/
+
+#logs
+*.log
+
+#editors
+.vscode/
+.idea/
