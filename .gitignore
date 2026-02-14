@@ -1,9 +1,10 @@
-#vitrual environments
+#virtual environments
 env/
+venv/
 .venv/
 
 #python cache
-__pychace__/
+__pycache__/
 *.pyc
 
 #environment variables
