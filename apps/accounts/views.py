@@ -8,8 +8,9 @@ from django.contrib import messages
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from .forms import UserRegistrationForm, UserLoginForm
+from .forms import UserRegistrationForm, UserLoginForm, ProfileUpdateForm
 from .models import User
+from apps.appointments.models import Appointment
 
 
 class UserRegistrationView(CreateView):
@@ -42,17 +43,14 @@ def login_view(request):
     if request.method == 'POST':
         form = UserLoginForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, f'Welcome back, {user.get_full_name() or user.username}!')
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, f'Welcome back, {user.get_full_name() or user.username}!')
                 
                 # Redirect based on user role
-                if user.is_admin_user:
-                    return redirect('admin_dashboard')
-                return redirect('user_dashboard')
+            if user.is_admin_user:
+                return redirect('admin_dashboard')
+            return redirect('user_dashboard')
         else:
             messages.error(request, 'Invalid username or password.')
     else:
@@ -77,7 +75,7 @@ def user_dashboard(request):
         return redirect('admin_dashboard')
     
     # Get user's appointments
-    from apps.appointments.models import Appointment
+   
     appointments = Appointment.objects.filter(user=request.user).order_by('-created_at')
     
     # Get statistics
@@ -133,3 +131,41 @@ def admin_dashboard(request):
     }
     
     return render(request, 'dashboard/admin_dashboard.html', context)
+
+@login_required
+def profile_view(request):
+    user= request.user
+
+    if request.method == "POST":
+        form = ProfileUpdateForm(
+            request.POST,
+            request.FILES,
+            instance=user
+        )
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully.")
+            return redirect("profile")
+    else:
+        form = ProfileUpdateForm(instance=user)
+
+    return render(request, "user_profile/profile.html", {
+        "form": form,
+        "user_obj": user
+    })
+
+@login_required
+def profile_edit(request):
+    user = request.user
+
+    if request.method == "POST":
+        form= ProfileUpdateForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect("user_dashboard")
+    else:
+        form = ProfileUpdateForm(instance=user)
+
+    return render(request, "user_profile/profile_edit.html",{"form":form})
+
+
