@@ -10,7 +10,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from .forms import UserRegistrationForm, UserLoginForm
 from .models import User
-
+from .forms import UserRegistrationForm, UserLoginForm, UserProfileForm
 
 class UserRegistrationView(CreateView):
     """View for user registration."""
@@ -133,3 +133,26 @@ def admin_dashboard(request):
     }
     
     return render(request, 'dashboard/admin_dashboard.html', context)
+
+
+@login_required
+def user_profile(request):
+    """View for updating user profile with picture upload."""
+
+    if request.method == 'POST':
+        # enctype="multipart/form-data" is needed for file uploads
+        form = UserProfileForm(
+            request.POST,
+            request.FILES,   # ← This captures uploaded files!
+            instance=request.user
+        )
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('user_profile')
+        else:
+            messages.error(request, 'Please fix the errors below.')
+    else:
+        form = UserProfileForm(instance=request.user)
+
+    return render(request, 'registration/profile.html', {'form': form})

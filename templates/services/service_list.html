@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Services - Appointment Scheduler{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Search & Filter Styling */
+    .search-filter-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        margin-bottom: 2rem;
+    }
+    
+    .search-box {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 0.875rem 3rem 0.875rem 1rem;
+        font-size: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .search-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        font-size: 1.25rem;
+    }
+    
+    .filter-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .filter-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .filter-select {
+        padding: 0.625rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        background: white;
+    }
+    
+    .filter-select:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .filter-actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-end;
+    }
+    
+    .btn-filter {
+        padding: 0.625rem 1.5rem;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-filter:hover {
+        background: #1e40af;
+        transform: translateY(-1px);
+    }
+    
+    .btn-clear {
+        padding: 0.625rem 1.5rem;
+        background: white;
+        color: #64748b;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-clear:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+    
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 0.5rem;
+    }
+    
+    .results-count {
+        font-weight: 600;
+        color: #334155;
+    }
+    
+    .results-sort {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .active-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .filter-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.375rem 0.75rem;
+        background: #dbeafe;
+        color: #1e40af;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .filter-tag-close {
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+        .filter-section {
+            grid-template-columns: 1fr;
+        }
+        
+        .results-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 3rem; margin-bottom: 3rem;">
+    <!-- Page Header -->
+    <div class="text-center mb-3">
+        <h1>Our Medical Services</h1>
+        <p style="color: #64748b; font-size: 1.125rem;">
+            Browse our comprehensive range of healthcare services
+        </p>
+    </div>
+    
+    <!-- Search & Filter Section -->
+    <div class="search-filter-container">
+        <form method="get" action="{% url 'service_list' %}" id="filterForm">
+            <!-- Search Box -->
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    name="search" 
+                    class="search-input" 
+                    placeholder="🔍 Search services by name or description..." 
+                    value="{{ search_query }}"
+                >
+                <span class="search-icon">🔍</span>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filter-section">
+                <!-- Category Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <select name="category" class="filter-select">
+                        <option value="">All Categories</option>
+                        {% for value, label in categories %}
+                            <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Price Range Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Min Price ($)</label>
+                    <input 
+                        type="number" 
+                        name="min_price" 
+                        class="filter-select" 
+                        placeholder="Min" 
+                        value="{{ min_price }}"
+                        min="0"
+                        step="10"
+                    >
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Max Price ($)</label>
+                    <input 
+                        type="number" 
+                        name="max_price" 
+                        class="filter-select" 
+                        placeholder="Max" 
+                        value="{{ max_price }}"
+                        min="0"
+                        step="10"
+                    >
+                </div>
+                
+                <!-- Duration Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Duration</label>
+                    <select name="duration" class="filter-select">
+                        <option value="">All Durations</option>
+                        <option value="short" {% if selected_duration == 'short' %}selected{% endif %}>
+                            Short (≤ 30 min)
+                        </option>
+                        <option value="medium" {% if selected_duration == 'medium' %}selected{% endif %}>
+                            Medium (31-60 min)
+                        </option>
+                        <option value="long" {% if selected_duration == 'long' %}selected{% endif %}>
+                            Long (> 60 min)
+                        </option>
+                    </select>
+                </div>
+                
+                <!-- Sort Options -->
+                <div class="filter-group">
+                    <label class="filter-label">Sort By</label>
+                    <select name="sort" class="filter-select">
+                        <option value="name" {% if selected_sort == 'name' %}selected{% endif %}>
+                            Name (A-Z)
+                        </option>
+                        <option value="price_low" {% if selected_sort == 'price_low' %}selected{% endif %}>
+                            Price (Low to High)
+                        </option>
+                        <option value="price_high" {% if selected_sort == 'price_high' %}selected{% endif %}>
+                            Price (High to Low)
+                        </option>
+                        <option value="duration" {% if selected_sort == 'duration' %}selected{% endif %}>
+                            Duration (Shortest First)
+                        </option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Filter Actions -->
+            <div class="filter-actions">
+                <button type="submit" class="btn-filter">
+                    🔍 Apply Filters
+                </button>
+                <a href="{% url 'service_list' %}" class="btn-clear">
+                    ✕ Clear All
+                </a>
+            </div>
+        </form>
+        
+        <!-- Active Filters Display -->
+        {% if search_query or selected_category or min_price or max_price or selected_duration %}
+            <div class="active-filters" style="margin-top: 1rem;">
+                <span style="color: #64748b; font-weight: 600; margin-right: 0.5rem;">Active Filters:</span>
+                
+                {% if search_query %}
+                    <span class="filter-tag">
+                        Search: "{{ search_query }}"
+                        <a href="?category={{ selected_category }}&min_price={{ min_price }}&max_price={{ max_price }}&duration={{ selected_duration }}&sort={{ selected_sort }}" 
+                           class="filter-tag-close">✕</a>
+                    </span>
+                {% endif %}
+                
+                {% if selected_category %}
+                    <span class="filter-tag">
+                        Category: {{ selected_category|title }}
+                        <a href="?search={{ search_query }}&min_price={{ min_price }}&max_price={{ max_price }}&duration={{ selected_duration }}&sort={{ selected_sort }}" 
+                           class="filter-tag-close">✕</a>
+                    </span>
+                {% endif %}
+                
+                {% if min_price %}
+                    <span class="filter-tag">
+                        Min: ${{ min_price }}
+                        <a href="?search={{ search_query }}&category={{ selected_category }}&max_price={{ max_price }}&duration={{ selected_duration }}&sort={{ selected_sort }}" 
+                           class="filter-tag-close">✕</a>
+                    </span>
+                {% endif %}
+                
+                {% if max_price %}
+                    <span class="filter-tag">
+                        Max: ${{ max_price }}
+                        <a href="?search={{ search_query }}&category={{ selected_category }}&min_price={{ min_price }}&duration={{ selected_duration }}&sort={{ selected_sort }}" 
+                           class="filter-tag-close">✕</a>
+                    </span>
+                {% endif %}
+                
+                {% if selected_duration %}
+                    <span class="filter-tag">
+                        Duration: {{ selected_duration|title }}
+                        <a href="?search={{ search_query }}&category={{ selected_category }}&min_price={{ min_price }}&max_price={{ max_price }}&sort={{ selected_sort }}" 
+                           class="filter-tag-close">✕</a>
+                    </span>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Results Header -->
+    <div class="results-header">
+        <div class="results-count">
+            📊 Found {{ total_services }} service{{ total_services|pluralize }}
+        </div>
+    </div>
+    
+    <!-- Services Grid -->
+    {% if services %}
+        <div class="grid-3">
+            {% for service in services %}
+                <div class="card">
+                    {% if service.image %}
+                        <img
+                            src="{{ service.image.url }}"
+                            alt="{{ service.name }}"
+                            style="width: 100%; height: 200px; object-fit: cover;"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                        >
+                        <div style="display:none; width:100%; height:200px;
+                                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                    align-items:center; justify-content:center; font-size:3rem;">
+                            {{ service.category_icon }}
+                        </div>
+                    {% else %}
+                        <div style="width: 100%; height: 200px;
+                                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                    display: flex; align-items: center;
+                                    justify-content: center; font-size: 3rem;">
+                            {{ service.category_icon }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="card-body">
+                        <!-- Category Badge -->
+                        <div style="margin-bottom: 0.75rem;">
+                            <span style="background: rgba(37, 99, 235, 0.1); color: #2563eb; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">
+                                {{ service.get_category_display }}
+                            </span>
+                        </div>
+                        
+                        <h3>{{ service.name }}</h3>
+                        <p style="color: #64748b;">{{ service.description|truncatewords:20 }}</p>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                            <div>
+                                <div style="color: #64748b; font-size: 0.875rem;">⏱️ Duration</div>
+                                <div style="font-weight: 600;">{{ service.duration_display }}</div>
+                            </div>
+                            <div>
+                                <div style="color: #64748b; font-size: 0.875rem;">💰 Price</div>
+                                <div style="font-weight: 600; color: #2563eb; font-size: 1.25rem;">Rs. {{ service.price }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="{% url 'service_detail' service.pk %}" class="btn btn-outline" style="flex: 1;">View Details</a>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'appointment_create' %}?service={{ service.pk }}" class="btn btn-primary" style="flex: 1;">Book Now</a>
+                            {% else %}
+                                <a href="{% url 'login' %}?next={% url 'appointment_create' %}" class="btn btn-primary" style="flex: 1;">Book Now</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <div class="text-center mt-3">
+                <div style="display: inline-flex; gap: 0.5rem;">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1&search={{ search_query }}&category={{ selected_category }}&min_price={{ min_price }}&max_price={{ max_price }}&duration={{ selected_duration }}&sort={{ selected_sort }}" class="btn btn-outline btn-sm">First</a>
+                        <a href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&category={{ selected_category }}&min_price={{ min_price }}&max_price={{ max_price }}&duration={{ selected_duration }}&sort={{ selected_sort }}" class="btn btn-outline btn-sm">Previous</a>
+                    {% endif %}
+                    
+                    <span class="btn btn-primary btn-sm">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&category={{ selected_category }}&min_price={{ min_price }}&max_price={{ max_price }}&duration={{ selected_duration }}&sort={{ selected_sort }}" class="btn btn-outline btn-sm">Next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}&search={{ search_query }}&category={{ selected_category }}&min_price={{ min_price }}&max_price={{ max_price }}&duration={{ selected_duration }}&sort={{ selected_sort }}" class="btn btn-outline btn-sm">Last</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center" style="padding: 3rem; background: white; border-radius: 1rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🔍</div>
+            <h3>No Services Found</h3>
+            <p style="color: #64748b; margin-bottom: 1.5rem;">
+                {% if search_query or selected_category or min_price or max_price or selected_duration %}
+                    No services match your search criteria. Try adjusting your filters.
+                {% else %}
+                    No services are currently available. Please check back later.
+                {% endif %}
+            </p>
+            {% if search_query or selected_category or min_price or max_price or selected_duration %}
+                <a href="{% url 'service_list' %}" class="btn btn-primary">Clear Filters</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
