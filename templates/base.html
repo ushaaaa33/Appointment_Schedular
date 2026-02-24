@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>{% block title %}Appointment Scheduler{% endblock %}</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    
+
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+
+<body class="page-wrapper">
+
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
@@ -24,22 +27,21 @@
                 <a href="{% url 'home' %}" class="navbar-brand">
                     📅 AppointEase
                 </a>
-                
+
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'service_list' %}" class="nav-link">Services</a></li>
                         <li><a href="{% url 'appointment_list' %}" class="nav-link">My Appointments</a></li>
                         <li><a href="{% url 'appointment_create' %}" class="nav-link">Book Appointment</a></li>
-                        
+
                         {% if user.is_admin_user %}
                             <li><a href="{% url 'admin_dashboard' %}" class="nav-link">Admin Dashboard</a></li>
                         {% else %}
                             <li><a href="{% url 'user_dashboard' %}" class="nav-link">Dashboard</a></li>
                         {% endif %}
-                         <li>
-                            <a href="{% url 'profile' %}" class="nav-link">
-                                My Profile
-                            </a>
+
+                        <li>
+                            <a href="{% url 'profile' %}" class="nav-link">My Profile</a>
                         </li>
                         <li><a href="{% url 'logout' %}" class="nav-link">Logout</a></li>
                     {% else %}
@@ -51,7 +53,7 @@
             </div>
         </div>
     </nav>
-    
+
     <!-- Messages -->
     {% if messages %}
         <div class="container" style="margin-top: 1.5rem;">
@@ -62,21 +64,21 @@
             {% endfor %}
         </div>
     {% endif %}
-    
+
     <!-- Main Content -->
-    <main>
+    <main class="page-content">
         {% block content %}{% endblock %}
     </main>
-    
+
     <!-- Footer -->
-    <footer style="background: #0f172a; color: white; padding: 2rem 0; margin-top: 4rem;">
+    <footer class="page-footer">
         <div class="container text-center">
-            <p style="margin: 0; color: rgba(255,255,255,0.8);">
+            <p>
                 &copy; 2026 AppointEase. All rights reserved.
             </p>
         </div>
     </footer>
-    
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -10,19 +10,29 @@
         </div>
 
         <div class="card-body">
-            <!-- Profile picture -->
+            <!-- Profile Picture -->
             <div class="text-center mb-4">
-                {% if user_obj.profile_picture %}
-                    <img src="{{ user_obj.profile_picture.url }}"
+                {% if request.user.profile_picture %}
+                    <img src="{{ request.user.profile_picture.url }}"
                          alt="Profile Picture"
                          style="width:120px; height:120px; border-radius:50%; object-fit:cover;">
                 {% else %}
-                    <div style="width:120px; height:120px; border-radius:50%; background:#e5e7eb; display:inline-flex; align-items:center; justify-content:center;">
+                    <div style="
+                        width:120px;
+                        height:120px;
+                        border-radius:50%;
+                        background:#e5e7eb;
+                        display:inline-flex;
+                        align-items:center;
+                        justify-content:center;
+                        color:#6b7280;
+                        font-size:14px;">
                         No Image
                     </div>
                 {% endif %}
             </div>
 
+            <!-- Profile Update Form -->
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
@@ -57,6 +67,14 @@
                     Save Changes
                 </button>
             </form>
+
+            <!-- Divider -->
+            <hr class="my-4">
+
+            <!-- Change Password -->
+            <a href="{% url 'change_password' %}" class="btn btn-primary">
+                Change Password
+            </a>
         </div>
     </div>
 </div>
