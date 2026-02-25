@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Appointment Scheduler{% endblock %}</title>
+    <title>{% block title %}AppointEase - Hospital Appointment System{% endblock %}</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Book medical appointments online. Browse specialists, check availability, and schedule your healthcare visits easily.">
+    <meta name="keywords" content="hospital appointments, medical booking, healthcare, doctors, specialists">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,9 +19,318 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
     {% block extra_css %}{% endblock %}
+    
+    <style>
+        /* Enhanced Navigation Styles */
+        .top-bar {
+            background: #1e40af;
+            color: white;
+            padding: 0.5rem 0;
+            font-size: 0.875rem;
+        }
+        
+        .top-bar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .top-bar-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .top-bar-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: opacity 0.2s;
+        }
+        
+        .top-bar-link:hover {
+            opacity: 0.8;
+        }
+        
+        /* Main Navigation */
+        .navbar {
+            background: var(--white);
+            box-shadow: var(--shadow-sm);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+            align-items: center;
+            margin: 0;
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-link {
+            color: var(--secondary);
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+            background: var(--light);
+        }
+        
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(37, 99, 235, 0.1);
+        }
+        
+        /* Dropdown Menu */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 0.5rem 0;
+            min-width: 220px;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .nav-item:hover .dropdown-menu {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1.25rem;
+            color: var(--dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s;
+        }
+        
+        .dropdown-item:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 0.5rem 0;
+        }
+        
+        /* Quick Action Buttons */
+        .quick-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        
+        .btn-emergency {
+            background: #ef4444;
+            color: white;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            animation: pulse 2s infinite;
+        }
+        
+        .btn-emergency:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+        
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem 0;
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+        
+        /* Footer Enhancement */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .top-bar {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .navbar-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: var(--shadow-lg);
+            }
+            
+            .navbar-nav.active {
+                display: flex;
+            }
+            
+            .dropdown-menu {
+                position: static;
+                box-shadow: none;
+                padding-left: 1rem;
+            }
+            
+            .quick-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn-emergency {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-content">
+                <div class="top-bar-links">
+                    <a href="tel:+1234567890" class="top-bar-link">
+                        📞 Emergency: (123) 456-7890
+                    </a>
+                    <a href="#" class="top-bar-link">
+                        📍 Find Location
+                    </a>
+                    <a href="#" class="top-bar-link">
+                        ⏰ 24/7 Service
+                    </a>
+                </div>
+                <div class="top-bar-links">
+                    {% if user.is_authenticated %}
+                        <span>Welcome, {{ user.first_name|default:user.username }}!</span>
+                    {% else %}
+                        <a href="{% url 'register' %}" class="top-bar-link">New Patient?</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Navigation -->
     <nav class="navbar">
         <div class="container">
             <div class="navbar-content">
@@ -25,32 +338,110 @@
                     📅 AppointEase
                 </a>
                 
-                <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'service_list' %}" class="nav-link">Services</a></li>
-                        <li><a href="{% url 'appointment_list' %}" class="nav-link">My Appointments</a></li>
-                        <li><a href="{% url 'appointment_create' %}" class="nav-link">Book Appointment</a></li>
-                        
-                        {% if user.is_admin_user %}
-                            <li><a href="{% url 'admin_dashboard' %}" class="nav-link">Admin Dashboard</a></li>
-                        {% else %}
-                            <li><a href="{% url 'user_dashboard' %}" class="nav-link">Dashboard</a></li>
-                        {% endif %}
-                         <li>
-                            <a href="{% url 'user_profile' %}" class="nav-link">
-                                My Profile
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    ☰
+                </button>
+                
+                <ul class="navbar-nav" id="navbarNav">
+                    <!-- Services Dropdown -->
+                    <li class="nav-item">
+                        <a href="{% url 'service_list' %}" class="nav-link">
+                            Services 🔽
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'service_list' %}?category=consultation" class="dropdown-item">
+                                🩺 Consultations
                             </a>
+                            <a href="{% url 'service_list' %}?category=diagnostic" class="dropdown-item">
+                                🔬 Diagnostics & Testing
+                            </a>
+                            <a href="{% url 'service_list' %}?category=dental" class="dropdown-item">
+                                🦷 Dental Care
+                            </a>
+                            <a href="{% url 'service_list' %}?category=therapy" class="dropdown-item">
+                                💪 Therapy & Rehabilitation
+                            </a>
+                            <a href="{% url 'service_list' %}?category=mental_health" class="dropdown-item">
+                                🧠 Mental Health
+                            </a>
+                            <a href="{% url 'service_list' %}?category=specialist" class="dropdown-item">
+                                👨‍⚕️ Specialist Consultation
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'service_list' %}" class="dropdown-item">
+                                📋 View All Services
+                            </a>
+                        </div>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                        <!-- Appointments Dropdown -->
+                        <li class="nav-item">
+                            <a href="{% url 'appointment_list' %}" class="nav-link">
+                                My Appointments 🔽
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="{% url 'appointment_create' %}" class="dropdown-item">
+                                    ➕ Book New Appointment
+                                </a>
+                                <a href="{% url 'appointment_list' %}" class="dropdown-item">
+                                    📋 View All Appointments
+                                </a>
+                                <a href="{% url 'appointment_list' %}?status=pending" class="dropdown-item">
+                                    ⏳ Pending Appointments
+                                </a>
+                                <a href="{% url 'appointment_list' %}?status=approved" class="dropdown-item">
+                                    ✅ Approved Appointments
+                                </a>
+                            </div>
                         </li>
-                        <li><a href="{% url 'logout' %}" class="nav-link">Logout</a></li>
+                        
+                        <!-- Dashboard/Profile Dropdown -->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                Account 🔽
+                            </a>
+                            <div class="dropdown-menu">
+                                {% if user.is_admin_user %}
+                                    <a href="{% url 'admin_dashboard' %}" class="dropdown-item">
+                                        📊 Admin Dashboard
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                {% else %}
+                                    <a href="{% url 'user_dashboard' %}" class="dropdown-item">
+                                        📊 My Dashboard
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'user_profile' %}" class="dropdown-item">
+                                    👤 Profile Settings
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'logout' %}" class="dropdown-item">
+                                    🚪 Logout
+                                </a>
+                            </div>
+                        </li>
                     {% else %}
-                        <li><a href="{% url 'service_list' %}" class="nav-link">Services</a></li>
                         <li><a href="{% url 'login' %}" class="nav-link">Login</a></li>
                         <li><a href="{% url 'register' %}" class="btn btn-primary btn-sm">Get Started</a></li>
                     {% endif %}
+                    
+                    <!-- Quick Actions -->
+                    <li class="quick-actions">
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'register' %}" class="btn-emergency">
+                                🚨 Emergency Contact
+                            </a>
+                        {% endif %}
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
+    
+    <!-- Breadcrumb Navigation -->
+    {% block breadcrumb %}{% endblock %}
     
     <!-- Messages -->
     {% if messages %}
@@ -68,14 +459,81 @@
         {% block content %}{% endblock %}
     </main>
     
-    <!-- Footer -->
-    <footer style="background: #0f172a; color: white; padding: 2rem 0; margin-top: 4rem;">
-        <div class="container text-center">
-            <p style="margin: 0; color: rgba(255,255,255,0.8);">
-                &copy; 2026 AppointEase. All rights reserved.
-            </p>
+    <!-- Enhanced Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <!-- About Section -->
+                <div class="footer-section">
+                    <h4>📅 AppointEase</h4>
+                    <p style="color: rgba(255,255,255,0.8); line-height: 1.6;">
+                        Your trusted partner in healthcare. Book appointments with top specialists and get quality medical care.
+                    </p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'service_list' %}">All Services</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'appointment_create' %}">Book Appointment</a></li>
+                            <li><a href="{% url 'user_dashboard' %}">My Dashboard</a></li>
+                        {% else %}
+                            <li><a href="{% url 'register' %}">Register</a></li>
+                            <li><a href="{% url 'login' %}">Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <!-- Services -->
+                <div class="footer-section">
+                    <h4>Our Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'service_list' %}?category=consultation">General Consultation</a></li>
+                        <li><a href="{% url 'service_list' %}?category=diagnostic">Diagnostics</a></li>
+                        <li><a href="{% url 'service_list' %}?category=dental">Dental Care</a></li>
+                        <li><a href="{% url 'service_list' %}?category=therapy">Physical Therapy</a></li>
+                        <li><a href="{% url 'service_list' %}?category=mental_health">Mental Health</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <ul class="footer-links">
+                        <li>📞 Emergency: (123) 456-7890</li>
+                        <li>📧 info@appointease.com</li>
+                        <li>📍 123 Healthcare Ave, Medical District</li>
+                        <li>⏰ 24/7 Emergency Service</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 AppointEase. All rights reserved. | Privacy Policy | Terms of Service</p>
+            </div>
         </div>
     </footer>
+    
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const nav = document.getElementById('navbarNav');
+            nav.classList.toggle('active');
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('navbarNav');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (!nav.contains(event.target) && !toggle.contains(event.target)) {
+                nav.classList.remove('active');
+            }
+        });
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>

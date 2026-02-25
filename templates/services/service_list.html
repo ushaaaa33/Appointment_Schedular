@@ -176,6 +176,21 @@
 </style>
 {% endblock %}
 
+{% block breadcrumb %}
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <span>/</span>
+        <span>Services</span>
+        {% if selected_category %}
+            <span>/</span>
+            <span>{{ selected_category|title }}</span>
+        {% endif %}
+    </nav>
+</div>
+{% endblock %}
+
+
 {% block content %}
 <div class="container" style="margin-top: 3rem; margin-bottom: 3rem;">
     <!-- Page Header -->
