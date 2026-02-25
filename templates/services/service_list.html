@@ -218,7 +218,7 @@
                 
                 <!-- Price Range Filter -->
                 <div class="filter-group">
-                    <label class="filter-label">Min Price ($)</label>
+                    <label class="filter-label">Min Price (Rs)</label>
                     <input 
                         type="number" 
                         name="min_price" 
@@ -231,7 +231,7 @@
                 </div>
                 
                 <div class="filter-group">
-                    <label class="filter-label">Max Price ($)</label>
+                    <label class="filter-label">Max Price (Rs)</label>
                     <input 
                         type="number" 
                         name="max_price" 
@@ -314,7 +314,7 @@
                 
                 {% if min_price %}
                     <span class="filter-tag">
-                        Min: ${{ min_price }}
+                        Min: Rs{{ min_price }}
                         <a href="?search={{ search_query }}&category={{ selected_category }}&max_price={{ max_price }}&duration={{ selected_duration }}&sort={{ selected_sort }}" 
                            class="filter-tag-close">✕</a>
                     </span>
@@ -322,7 +322,7 @@
                 
                 {% if max_price %}
                     <span class="filter-tag">
-                        Max: ${{ max_price }}
+                        Max: Rs{{ max_price }}
                         <a href="?search={{ search_query }}&category={{ selected_category }}&min_price={{ min_price }}&duration={{ selected_duration }}&sort={{ selected_sort }}" 
                            class="filter-tag-close">✕</a>
                     </span>
