@@ -10,7 +10,7 @@ class ServiceListView(ListView):
     """View for listing all active services."""
     
     model = Service
-    template_name = 'services/service_list.html'
+    template_name = 'services/services_list.html'
     context_object_name = 'services'
     paginate_by = 9
     
@@ -22,7 +22,7 @@ class ServiceDetailView(DetailView):
     """View for displaying service details."""
     
     model = Service
-    template_name = 'services/service_detail.html'
+    template_name = 'services/services_detail.html'
     context_object_name = 'service'
     
     def get_queryset(self):

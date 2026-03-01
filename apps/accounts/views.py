@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from .forms import UserRegistrationForm, UserLoginForm
 from .models import User
+from apps.appointments.models import Appointment, Notification
 
 
 class UserRegistrationView(CreateView):
@@ -76,8 +77,7 @@ def user_dashboard(request):
     if request.user.is_admin_user:
         return redirect('admin_dashboard')
     
-    # Get user's appointments
-    from apps.appointments.models import Appointment
+    # Get user's appointments    
     appointments = Appointment.objects.filter(user=request.user).order_by('-created_at')
     
     # Get statistics
@@ -86,12 +86,20 @@ def user_dashboard(request):
     approved_appointments = appointments.filter(status='approved').count()
     rejected_appointments = appointments.filter(status='rejected').count()
     
+    # Get unread notifications
+    notifications = Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).order_by('-created_at')
+
     context = {
         'appointments': appointments[:5],  # Latest 5 appointments
         'total_appointments': total_appointments,
         'pending_appointments': pending_appointments,
         'approved_appointments': approved_appointments,
         'rejected_appointments': rejected_appointments,
+        "notifications": notifications,
+        "notification_count": notifications.count(),
     }
     
     return render(request, 'dashboard/user_dashboard.html', context)
@@ -106,7 +114,6 @@ def admin_dashboard(request):
         return redirect('user_dashboard')
     
     # Get all appointments
-    from apps.appointments.models import Appointment
     appointments = Appointment.objects.all().order_by('-created_at')
     
     # Get statistics
@@ -133,3 +140,12 @@ def admin_dashboard(request):
     }
     
     return render(request, 'dashboard/admin_dashboard.html', context)
+
+# mark notification as read
+def mark_notifications_read(request):
+    Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).update(is_read=True)
+
+    return redirect('user_dashboard')
