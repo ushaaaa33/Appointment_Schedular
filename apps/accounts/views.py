@@ -6,21 +6,28 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import (
     login,
     logout,
-    authenticate,
     update_session_auth_hash
 )
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
-
 from django.contrib.auth.forms import PasswordChangeForm
 
-from .forms import UserRegistrationForm, UserLoginForm, ProfileUpdateForm
-from .models import User
 from apps.appointments.models import Appointment
+from apps.services.models import Service
+
+from .models import User
+from .forms import (
+    UserRegistrationForm,
+    UserLoginForm,
+    ProfileUpdateForm,
+)
 
 
+# =========================
+# Registration
+# =========================
 class UserRegistrationView(CreateView):
     """View for user registration."""
 
@@ -40,6 +47,9 @@ class UserRegistrationView(CreateView):
         return super().dispatch(request, *args, **kwargs)
 
 
+# =========================
+# Login
+# =========================
 def login_view(request):
     """View for user login."""
 
@@ -54,7 +64,7 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
 
-            # Session expires after 1 hour (security)
+            # Session expires after 1 hour
             request.session.set_expiry(3600)
 
             messages.success(
@@ -73,6 +83,9 @@ def login_view(request):
     return render(request, "registration/login.html", {"form": form})
 
 
+# =========================
+# Logout
+# =========================
 @login_required
 def logout_view(request):
     """View for user logout."""
@@ -81,6 +94,9 @@ def logout_view(request):
     return redirect("home")
 
 
+# =========================
+# User Dashboard
+# =========================
 @login_required
 def user_dashboard(request):
     """Dashboard for regular users."""
@@ -103,6 +119,9 @@ def user_dashboard(request):
     return render(request, "dashboard/user_dashboard.html", context)
 
 
+# =========================
+# Admin Dashboard
+# =========================
 @login_required
 def admin_dashboard(request):
     """Dashboard for admin users."""
@@ -113,8 +132,6 @@ def admin_dashboard(request):
             "You do not have permission to access the admin dashboard."
         )
         return redirect("user_dashboard")
-
-    from apps.services.models import Service
 
     appointments = Appointment.objects.all().order_by("-created_at")
 
@@ -131,9 +148,12 @@ def admin_dashboard(request):
     return render(request, "dashboard/admin_dashboard.html", context)
 
 
+# =========================
+# Profile
+# =========================
 @login_required
 def profile_view(request):
-    """View user profile."""
+    """Edit user profile."""
 
     user = request.user
 
@@ -153,39 +173,13 @@ def profile_view(request):
     return render(
         request,
         "user_profile/profile.html",
-        {
-            "form": form,
-            "user_obj": user
-        }
-    )
-
-
-@login_required
-def profile_view(request):
-    """Edit user profile."""
-
-    user = request.user
-
-    if request.method == "POST":
-        form = ProfileUpdateForm(
-            request.POST,
-            request.FILES,
-            instance=user
-        )
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Profile updated successfully.")
-            return redirect("user_dashboard")
-    else:
-        form = ProfileUpdateForm(instance=user)
-
-    return render(
-        request,
-        "user_profile/profile.html",
         {"form": form}
     )
 
 
+# =========================
+# Change Password
+# =========================
 @login_required
 def change_password(request):
     """Change user password securely."""
@@ -195,7 +189,7 @@ def change_password(request):
         if form.is_valid():
             user = form.save()
 
-            # Keeps user logged in after password change
+            # Keep user logged in
             update_session_auth_hash(request, user)
 
             messages.success(

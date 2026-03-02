@@ -60,43 +60,72 @@ class Command(BaseCommand):
         # Create services
         self.stdout.write('Creating services...')
         
+        # Find the services_data section and replace with:
+
         services_data = [
-            {
-                'name': 'General Consultation',
-                'description': 'Comprehensive health consultation with our experienced doctors. Discuss your health concerns and get professional medical advice.',
-                'duration_minutes': 30,
-                'price': Decimal('50.00'),
-            },
-            {
-                'name': 'Dental Checkup',
-                'description': 'Complete dental examination including teeth cleaning and oral health assessment. Maintain your perfect smile with regular checkups.',
-                'duration_minutes': 45,
-                'price': Decimal('75.00'),
-            },
-            {
-                'name': 'Physical Therapy Session',
-                'description': 'Professional physical therapy session for rehabilitation and pain management. Customized treatment plans for your specific needs.',
-                'duration_minutes': 60,
-                'price': Decimal('90.00'),
-            },
-            {
-                'name': 'Mental Health Counseling',
-                'description': 'Confidential counseling session with licensed therapists. Talk about your mental health in a safe and supportive environment.',
-                'duration_minutes': 50,
-                'price': Decimal('100.00'),
-            },
-            {
-                'name': 'Nutritional Consultation',
-                'description': 'Expert nutritional guidance and personalized meal planning. Achieve your health goals with professional dietary advice.',
-                'duration_minutes': 40,
-                'price': Decimal('65.00'),
-            },
-            {
-                'name': 'Eye Examination',
-                'description': 'Complete eye health examination and vision testing. Get prescription updates and eye health recommendations.',
-                'duration_minutes': 30,
-                'price': Decimal('55.00'),
-            },
+        {
+            'name': 'General Consultation',
+            'description': 'Comprehensive health consultation with our experienced doctors. Discuss your health concerns and get professional medical advice.',
+            'category': 'consultation',
+            'duration_minutes': 30,
+            'price': Decimal('50.00'),
+        },
+        {
+            'name': 'Dental Checkup',
+            'description': 'Complete dental examination including teeth cleaning and oral health assessment. Maintain your perfect smile with regular checkups.',
+            'category': 'dental',
+            'duration_minutes': 45,
+            'price': Decimal('75.00'),
+        },
+        {
+            'name': 'Physical Therapy Session',
+            'description': 'Professional physical therapy session for rehabilitation and pain management. Customized treatment plans for your specific needs.',
+            'category': 'therapy',
+            'duration_minutes': 60,
+            'price': Decimal('90.00'),
+        },
+        {
+            'name': 'Mental Health Counseling',
+            'description': 'Confidential counseling session with licensed therapists. Talk about your mental health in a safe and supportive environment.',
+            'category': 'mental_health',
+            'duration_minutes': 50,
+            'price': Decimal('100.00'),
+        },
+        {
+            'name': 'Nutritional Consultation',
+            'description': 'Expert nutritional guidance and personalized meal planning. Achieve your health goals with professional dietary advice.',
+            'category': 'wellness',
+            'duration_minutes': 40,
+            'price': Decimal('65.00'),
+        },
+        {
+            'name': 'Eye Examination',
+            'description': 'Complete eye health examination and vision testing. Get prescription updates and eye health recommendations.',
+            'category': 'diagnostic',
+            'duration_minutes': 30,
+            'price': Decimal('55.00'),
+        },
+        {
+            'name': 'X-Ray Imaging',
+            'description': 'Digital X-ray imaging for accurate diagnosis. Quick and safe radiographic examination.',
+            'category': 'diagnostic',
+            'duration_minutes': 20,
+            'price': Decimal('85.00'),
+        },
+        {
+            'name': 'Blood Test Panel',
+            'description': 'Comprehensive blood testing including CBC, lipid profile, and glucose levels.',
+            'category': 'diagnostic',
+            'duration_minutes': 15,
+            'price': Decimal('120.00'),
+        },
+        {
+            'name': 'Cardiac Consultation',
+            'description': 'Specialist consultation for heart-related concerns with experienced cardiologist.',
+            'category': 'specialist',
+            'duration_minutes': 45,
+            'price': Decimal('150.00'),
+        },
         ]
         
         services = []
