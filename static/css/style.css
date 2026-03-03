@@ -500,3 +500,25 @@ a:hover {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+html, body {
+    height: 100%;
+}
+
+.page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-content {
+    flex: 1;
+}
+
+.page-footer {
+    background: var(--dark);
+    color: rgba(255,255,255,0.85);
+    padding: var(--spacing-lg) 0;
+    text-align: center;
+}
+
