@@ -4,7 +4,8 @@ Views for displaying and managing services with search and filtering.
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView
 from django.db.models import Q
-from .models import Service
+from .models import Service , Doctor
+from django.db import models
 
 
 class ServiceListView(ListView):
@@ -97,3 +98,20 @@ class ServiceDetailView(DetailView):
     
     def get_queryset(self):
         return Service.objects.filter(is_active=True)
+
+# Doctor Profile 
+
+def doctor_profile(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+
+    return render(request, "doctor/doctor_profile.html", {
+        "doctor": doctor
+    })
+
+def doctor_list(request):
+    doctors = Doctor.objects.all()
+
+    return render(request, "doctor/doctor_list.html", {
+        "doctors": doctors
+    })
+

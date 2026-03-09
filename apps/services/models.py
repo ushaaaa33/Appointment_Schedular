@@ -6,6 +6,8 @@ from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 from decimal import Decimal
 import os
+from django.contrib.auth.models import User
+from django.conf import settings
 
 
 def validate_image_size(image):
@@ -34,6 +36,16 @@ class Service(models.Model):
     """
     Service model representing different types of services offered.
     """
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    doctor = models.ForeignKey(
+        "Doctor",
+        on_delete=models.CASCADE,
+        related_name="services",
+        null=True,
+        blank=True
+    )
+   
 
     CATEGORY_CHOICES = (
         ('consultation', 'Consultation'),
@@ -151,3 +163,32 @@ class Service(models.Model):
             'other': '🎯',
         }
         return icons.get(self.category, '🎯')
+    
+#Doctor Profile
+
+class Doctor(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    specialization = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"Dr. {self.user.first_name} {self.user.last_name} - {self.specialization}"
+    
+
+class Education(models.Model):
+    doctor = models.ForeignKey(Doctor, related_name="educations", on_delete=models.CASCADE)
+    degree = models.CharField(max_length=200)
+    institution = models.CharField(max_length=200)
+    year = models.IntegerField()
+
+
+class Experience(models.Model):
+    doctor = models.ForeignKey(Doctor, related_name="experiences", on_delete=models.CASCADE)
+    position = models.CharField(max_length=200)
+    hospital = models.CharField(max_length=200)
+    start_year = models.IntegerField()
+    end_year = models.IntegerField(blank=True, null=True)
+
+
+class Language(models.Model):
+    doctor = models.ForeignKey(Doctor, related_name="languages", on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
