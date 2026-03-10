@@ -4,7 +4,7 @@ Admin configuration for Service model with image preview.
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from .models import Service
+from .models import Service, Doctor, Education, Experience, Language
 
 
 @admin.register(Service)
@@ -14,6 +14,7 @@ class ServiceAdmin(admin.ModelAdmin):
     list_display = (
         'image_preview',
         'name',
+        'doctor',
         'category',
         'price',
         'duration_minutes',
@@ -21,7 +22,7 @@ class ServiceAdmin(admin.ModelAdmin):
         'created_at'
     )
     list_filter = ('is_active', 'category', 'created_at')
-    search_fields = ('name', 'description')
+    search_fields = ('name', 'description', 'doctor_user_first_name')
     list_editable = ('is_active',)
     ordering = ('category', 'name')
     readonly_fields = ('created_at', 'updated_at', 'image_preview_large')
@@ -30,6 +31,7 @@ class ServiceAdmin(admin.ModelAdmin):
         ('Basic Information', {
             'fields': (
                 'name',
+                'doctor',
                 'description',
                 'category',
             ),
@@ -78,3 +80,9 @@ class ServiceAdmin(admin.ModelAdmin):
         return mark_safe('<p style="color:#64748b;">No image uploaded yet.</p>')
     
     image_preview_large.short_description = 'Current Image Preview'
+
+
+admin.site.register(Doctor)
+admin.site.register(Education)
+admin.site.register(Experience)
+admin.site.register(Language)
