@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+<h2>Our Doctors</h2>
+
+<div class="row">
+{% for doctor in doctors %}
+
+<div class="col-md-4">
+    <div class="card p-3">
+        <h4>{{ doctor.name }}</h4>
+        <p>{{ doctor.specialization }}</p>
+
+        <a href="{% url 'doctor_profile' doctor.id %}" class="btn btn-primary">
+            View Profile
+        </a>
+    </div>
+</div>
+
+{% endfor %}
+</div>
+
+</div>
+{% endblock %}

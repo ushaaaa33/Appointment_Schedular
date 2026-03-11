@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from .models import Appointment
 from .forms import AppointmentForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 @method_decorator(login_required, name='dispatch')
@@ -29,9 +30,8 @@ class AppointmentCreateView(CreateView):
         return super().form_valid(form)
 
 
-@method_decorator(login_required, name='dispatch')
-class AppointmentListView(ListView):
-    """View for listing user's appointments."""
+class AppointmentListView(LoginRequiredMixin, ListView):
+    """View for listing user's appointments with filtering."""
     
     model = Appointment
     template_name = 'appointments/appointment_list.html'
@@ -40,8 +40,21 @@ class AppointmentListView(ListView):
     
     def get_queryset(self):
         if self.request.user.is_admin_user:
-            return Appointment.objects.all().order_by('-created_at')
-        return Appointment.objects.filter(user=self.request.user).order_by('-created_at')
+            queryset = Appointment.objects.all()
+        else:
+            queryset = Appointment.objects.filter(user=self.request.user)
+        
+        # Filter by status from URL parameter
+        status = self.request.GET.get('status', '')
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        return queryset.order_by('-appointment_date', '-appointment_time')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['selected_status'] = self.request.GET.get('status', '')
+        return context
 
 
 @method_decorator(login_required, name='dispatch')

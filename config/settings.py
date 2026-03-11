@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -124,9 +125,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-
-
-
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
@@ -140,7 +138,16 @@ AUTH_USER_MODEL = 'accounts.User'
 # Authentication URLs
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'user_dashboard'
-LOGOUT_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'
+
+SESSION_COOKIE_AGE = 1800  # 30 minutes
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 # REST Framework
 REST_FRAMEWORK = {
@@ -153,3 +160,27 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
 }
+
+
+# import os
+# from pathlib import Path
+
+# BASE_DIR = Path(__file__).resolve().parent.parent
+
+# # ============================================
+# # MEDIA FILES CONFIGURATION
+# # ============================================
+
+# # URL that handles media files from the web
+# MEDIA_URL = '/media/'
+
+# # Absolute filesystem path to the directory
+# # that will hold user-uploaded files
+# MEDIA_ROOT = BASE_DIR / 'media'
+
+# # ============================================
+# # STATIC FILES CONFIGURATION
+# # ============================================
+# STATIC_URL = '/static/'
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATICFILES_DIRS = [BASE_DIR / 'static']

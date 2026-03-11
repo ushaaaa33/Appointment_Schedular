@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="card p-4">
+        <div class="row">
+
+            <div class="col-md-3">
+               
+            </div>
+
+            <div class="col-md-9">
+                <h2>{{ doctor.name }}</h2>
+                <p><strong>Specialization:</strong> {{ doctor.specialization }}</p>
+            </div>
+
+        </div>
+    </div>
+
+    <br>
+
+    <div class="card p-4">
+        <h4>Education</h4>
+        <ul>
+            {% for edu in doctor.educations.all %}
+            <li>
+                {{ edu.degree }} - {{ edu.institution }} ({{ edu.year }})
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <br>
+
+    <div class="card p-4">
+        <h4>Working Experience</h4>
+        <ul>
+            {% for exp in doctor.experiences.all %}
+            <li>
+                {{ exp.position }} - {{ exp.hospital }} ({{ exp.start_year }} - {{ exp.end_year }})
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <br>
+
+    <h3>Services</h3>
+
+    <ul>
+    {% for service in doctor.services.all %}
+        <li>
+            {{ service.name }} - ${{ service.price }}
+        </li>
+    {% empty %}
+        <li>No services available</li>
+    {% endfor %}
+    </ul>
+
+    <div class="card p-4">
+        <h4>Languages</h4>
+        <ul>
+            {% for language in doctor.languages.all %}
+            <li>{{ language.name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</div>
+{% endblock %}

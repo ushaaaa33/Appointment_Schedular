@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Appointment Scheduler{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .profile-picture-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-picture-wrapper {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin-bottom: 1rem;
+    }
+
+    .profile-picture-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #2563eb;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .profile-picture-placeholder {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+        border: 4px solid #2563eb;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .upload-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        transition: all 0.2s;
+    }
+
+    .upload-btn:hover {
+        background: #1e40af;
+        transform: scale(1.1);
+    }
+
+    /* Image preview on select */
+    #imagePreview {
+        display: none;
+        margin-top: 0.5rem;
+    }
+
+    #imagePreview img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #10b981;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 3rem; margin-bottom: 3rem;">
+    <div class="profile-container">
+        <div class="card">
+            <div class="card-header">
+                <h2 style="margin: 0;">👤 My Profile</h2>
+            </div>
+            <div class="card-body">
+                <!-- Profile Picture Display -->
+                <div class="profile-picture-section">
+                    <div class="profile-picture-wrapper">
+                        {% if user.profile_picture %}
+                            <img
+                                src="{{ user.profile_picture.url }}"
+                                alt="Profile Picture"
+                                class="profile-picture-img"
+                                id="currentProfilePic"
+                            >
+                        {% else %}
+                            <div class="profile-picture-placeholder" id="currentProfilePic">
+                                {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                            </div>
+                        {% endif %}
+
+                        <!-- Camera icon to trigger file input -->
+                        <button
+                            class="upload-btn"
+                            type="button"
+                            onclick="document.getElementById('profilePictureInput').click()"
+                            title="Change profile picture"
+                        >
+                            📷
+                        </button>
+                    </div>
+
+                    <!-- New image preview before saving -->
+                    <div id="imagePreview">
+                        <p style="color: #10b981; font-size: 0.875rem; margin-bottom: 0.5rem;">
+                            ✅ New picture selected (save to apply)
+                        </p>
+                        <img id="previewImg" src="" alt="Preview">
+                    </div>
+
+                    <p style="color: #64748b; font-size: 0.875rem; margin-top: 0.5rem;">
+                        Click the camera icon to change your photo<br>
+                        <small>JPG, PNG, WEBP • Max 2MB</small>
+                    </p>
+                </div>
+
+                <!-- Profile Form -->
+                <!-- IMPORTANT: enctype="multipart/form-data" is required for file uploads! -->
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Hidden file input triggered by camera button -->
+                    <div style="display: none;">
+                        {{ form.profile_picture }}
+                    </div>
+
+                    {% if form.profile_picture.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.profile_picture.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">First Name</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                                    {{ form.first_name.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Last Name</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                                    {{ form.last_name.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                                {{ form.email.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}
+                            <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                                {{ form.phone.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">
+                            💾 Save Changes
+                        </button>
+                        <a href="{% url 'user_dashboard' %}" class="btn btn-secondary" style="flex: 1;">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Account Info Footer -->
+            <div class="card-footer">
+                <div style="color: #64748b; font-size: 0.875rem;">
+                    <strong>Username:</strong> {{ user.username }} &nbsp;|&nbsp;
+                    <strong>Role:</strong> {{ user.get_role_display }} &nbsp;|&nbsp;
+                    <strong>Member since:</strong> {{ user.date_joined|date:"F d, Y" }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Show image preview when user selects a new profile picture
+    document.getElementById('profilePictureInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file size before showing preview
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Image too large! Maximum size is 2MB.');
+                this.value = '';
+                return;
+            }
+
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                alert('Invalid file type. Please upload JPG, PNG, or WEBP.');
+                this.value = '';
+                return;
+            }
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}
