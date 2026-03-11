@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from apps.services.models import Service
+from django.contrib import messages
 
 
 class Weekday(models.Model):
@@ -87,6 +88,30 @@ class Appointment(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        old_status = None
+
+        if not is_new:
+            old_status = Appointment.objects.get(pk=self.pk).status
+        super().save(*args, **kwargs)
+
+        # Trigger notification only if status changed
+        if not is_new and old_status != self.status:
+            Notification.objects.create(user=self.user, message=f"Your appointment has been {self.status}.")
+    
+    def create_status_notification(self):
+        messages = {
+            'approved': f"Your appointment for {self.service.name} has been approved.",
+            'rejected': f"Your appointment for {self.service.name} was rejected.",
+            'completed': f"Your appointment for {self.service.name} is completed.",
+            'cancelled': f"Your appointment for {self.service.name} was cancelled.",
+        }
+
+        message = messages.get(self.status)
+        if message:
+            Notification.objects.create(user=self.user, message=message)
     
     class Meta:
         ordering = ['-appointment_date', '-appointment_time']
@@ -117,3 +142,17 @@ class Appointment(models.Model):
             'completed': 'info',
         }
         return colors.get(self.status, 'secondary')
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='notifications'
+    )
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.user}"
