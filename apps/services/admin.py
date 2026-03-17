@@ -82,7 +82,7 @@ class ServiceAdmin(admin.ModelAdmin):
     image_preview_large.short_description = 'Current Image Preview'
 
 
-# admin.site.register(Doctor)
-# admin.site.register(Education)
-# admin.site.register(Experience)
-# admin.site.register(Language)
+admin.site.register(Doctor)
+admin.site.register(Education)
+admin.site.register(Experience)
+admin.site.register(Language)

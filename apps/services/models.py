@@ -166,7 +166,7 @@ class Service(models.Model):
     
 #Doctor Profile
 
-# class Doctor(models.Model):
+class Doctor(models.Model):
 
     # SPECIALIZATION_CHOICES = [
     #     ('general', 'General Physician'),
@@ -249,41 +249,41 @@ class Service(models.Model):
 
     
     # mandip works
-#     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-#     specialization = models.CharField(max_length=255)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    specialization = models.CharField(max_length=255)
 
-#     def __str__(self):
-#         return f"Dr. {self.user.first_name} {self.user.last_name} - {self.specialization}"
+    def __str__(self):
+        return f"Dr. {self.user.first_name} {self.user.last_name} - {self.specialization}"
     
 
-# class Education(models.Model):
-#     doctor = models.ForeignKey(Doctor, related_name="educations", on_delete=models.CASCADE)
-#     degree = models.CharField(max_length=200)
-#     institution = models.CharField(max_length=200)
-#     year = models.IntegerField()
+class Education(models.Model):
+    doctor = models.ForeignKey(Doctor, related_name="educations", on_delete=models.CASCADE)
+    degree = models.CharField(max_length=200)
+    institution = models.CharField(max_length=200)
+    year = models.IntegerField()
 
 
-# class Experience(models.Model):
-#     doctor = models.ForeignKey(Doctor, related_name="experiences", on_delete=models.CASCADE)
-#     position = models.CharField(max_length=200)
-#     hospital = models.CharField(max_length=200)
-#     start_year = models.IntegerField()
-#     end_year = models.IntegerField(blank=True, null=True)
+class Experience(models.Model):
+    doctor = models.ForeignKey(Doctor, related_name="experiences", on_delete=models.CASCADE)
+    position = models.CharField(max_length=200)
+    hospital = models.CharField(max_length=200)
+    start_year = models.IntegerField()
+    end_year = models.IntegerField(blank=True, null=True)
 
 
-# class Language(models.Model):
-#     doctor = models.ForeignKey(Doctor, related_name="languages", on_delete=models.CASCADE)
-#     name = models.CharField(max_length=100)
+class Language(models.Model):
+    doctor = models.ForeignKey(Doctor, related_name="languages", on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
 
 # Timestamps
-    # created_at = models.DateTimeField(auto_now_add=True)
-    # updated_at = models.DateTimeField(auto_now=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
     
-    # class Meta:
-    #     ordering = ['-rating', 'name']
+#     class Meta:
+#         ordering = ['-rating', 'name']
     
-    # def __str__(self):
-    #     return f"Dr. {self.name} ({self.get_specialization_display()})"
+#     def __str__(self):
+#         return f"Dr. {self.name} ({self.get_specialization_display()})"
 
 
 #  PROPERTIES - For recommendation system
