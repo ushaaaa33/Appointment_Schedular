@@ -101,17 +101,17 @@ class ServiceDetailView(DetailView):
 
 # Doctor Profile 
 
-def doctor_profile(request, doctor_id):
-    doctor = get_object_or_404(Doctor, id=doctor_id)
+# def doctor_profile(request, doctor_id):
+#     doctor = get_object_or_404(Doctor, id=doctor_id)
 
-    return render(request, "doctor/doctor_profile.html", {
-        "doctor": doctor
-    })
+#     return render(request, "doctor/doctor_profile.html", {
+#         "doctor": doctor
+#     })
 
-def doctor_list(request):
-    doctors = Doctor.objects.all()
+# def doctor_list(request):
+#     doctors = Doctor.objects.all()
 
-    return render(request, "doctor/doctor_list.html", {
-        "doctors": doctors
-    })
+#     return render(request, "doctor/doctor_list.html", {
+#         "doctors": doctors
+#     })
 
