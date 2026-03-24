@@ -1,6 +1,3 @@
-"""
-URL configuration for the Appointment Scheduler project.
-"""
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -13,6 +10,7 @@ urlpatterns = [
     path('accounts/', include('apps.accounts.urls')),
     path('services/', include('apps.services.urls')),
     path('appointments/', include('apps.appointments.urls')),
+    # path('doctors/', include('doctors.urls')), REMOVED: Invalid URL (BUG FIX)
     
 ]
 

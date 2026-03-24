@@ -331,117 +331,51 @@
     </div>
     
     <!-- Main Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="navbar-content">
-                <a href="{% url 'home' %}" class="navbar-brand">
-                    📅 AppointEase
-                </a>
+<!-- Main Navigation -->
+<nav class="navbar">
+    <div class="container">
+        <div class="navbar-content">
+            <a href="{% url 'home' %}" class="navbar-brand">
+                📅 AppointEase
+            </a>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                ☰
+            </button>
+            
+            <ul class="navbar-nav" id="navbarNav">
+                <!-- Services Link -->
+                <li><a href="{% url 'service_list' %}" class="nav-link">Services</a></li>
                 
-                <!-- Mobile Menu Toggle -->
-                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                    ☰
-                </button>
+                <!-- ✅ NEW: Find Doctors Button -->
+                <li><a href="{% url 'doctor_list' %}" class="nav-link">Find Doctors</a></li>
                 
-                <ul class="navbar-nav" id="navbarNav">
-                    <!-- Services Dropdown -->
-                    <li class="nav-item">
-                        <a href="{% url 'service_list' %}" class="nav-link">
-                            Services 🔽
-                        </a>
-                        <div class="dropdown-menu">
-                            <a href="{% url 'service_list' %}?category=consultation" class="dropdown-item">
-                                🩺 Consultations
-                            </a>
-                            <a href="{% url 'service_list' %}?category=diagnostic" class="dropdown-item">
-                                🔬 Diagnostics & Testing
-                            </a>
-                            <a href="{% url 'service_list' %}?category=dental" class="dropdown-item">
-                                🦷 Dental Care
-                            </a>
-                            <a href="{% url 'service_list' %}?category=therapy" class="dropdown-item">
-                                💪 Therapy & Rehabilitation
-                            </a>
-                            <a href="{% url 'service_list' %}?category=mental_health" class="dropdown-item">
-                                🧠 Mental Health
-                            </a>
-                            <a href="{% url 'service_list' %}?category=specialist" class="dropdown-item">
-                                👨‍⚕️ Specialist Consultation
-                            </a>
-                            <a href="{% url 'doctor_list' %}" class="dropdown-item">
-                                👨‍⚕️ Our Doctors 
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="{% url 'service_list' %}" class="dropdown-item">
-                                📋 View All Services
-                            </a>
-                        </div>
-                    </li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'appointment_list' %}" class="nav-link">My Appointments</a></li>
                     
-                    {% if user.is_authenticated %}
-                        <!-- Appointments Dropdown -->
-                        <li class="nav-item">
-                            <a href="{% url 'appointment_list' %}" class="nav-link">
-                                My Appointments 🔽
-                            </a>
-                            <div class="dropdown-menu">
-                                <a href="{% url 'appointment_create' %}" class="dropdown-item">
-                                    ➕ Book New Appointment
-                                </a>
-                                <a href="{% url 'appointment_list' %}" class="dropdown-item">
-                                    📋 View All Appointments
-                                </a>
-                                <a href="{% url 'appointment_list' %}?status=pending" class="dropdown-item">
-                                    ⏳ Pending Appointments
-                                </a>
-                                <a href="{% url 'appointment_list' %}?status=approved" class="dropdown-item">
-                                    ✅ Approved Appointments
-                                </a>
-                            </div>
-                        </li>
-                        
-                        <!-- Dashboard/Profile Dropdown -->
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                Account 🔽
-                            </a>
-                            <div class="dropdown-menu">
-                                {% if user.is_admin_user %}
-                                    <a href="{% url 'admin_dashboard' %}" class="dropdown-item">
-                                        📊 Admin Dashboard
-                                    </a>
-                                    <div class="dropdown-divider"></div>
-                                {% else %}
-                                    <a href="{% url 'user_dashboard' %}" class="dropdown-item">
-                                        📊 My Dashboard
-                                    </a>
-                                {% endif %}
-                                <a href="{% url 'profile' %}" class="dropdown-item">
-                                    👤 Profile Settings
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'logout' %}" class="dropdown-item">
-                                    🚪 Logout
-                                </a>
-                            </div>
-                        </li>
+                    {% if user.is_admin_user %}
+                        <li><a href="{% url 'admin_dashboard' %}" class="nav-link">Dashboard</a></li>
                     {% else %}
-                        <li><a href="{% url 'login' %}" class="nav-link">Login</a></li>
-                        <li><a href="{% url 'register' %}" class="btn btn-primary btn-sm">Get Started</a></li>
+                        <li><a href="{% url 'user_dashboard' %}" class="nav-link">Dashboard</a></li>
                     {% endif %}
                     
-                    <!-- Quick Actions -->
-                    <li class="quick-actions">
-                        {% if not user.is_authenticated %}
-                            <a href="{% url 'register' %}" class="btn-emergency">
-                                🚨 Emergency Contact
-                            </a>
-                        {% endif %}
-                    </li>
-                </ul>
-            </div>
+                    <li><a href="{% url 'logout' %}" class="nav-link">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}" class="nav-link">Login</a></li>
+                    <li><a href="{% url 'register' %}" class="btn btn-primary btn-sm">Get Started</a></li>
+                {% endif %}
+                
+                <!-- Emergency Contact Button -->
+                <li>
+                    <a href="tel:+977456789" class="btn" style="background: #ef4444; color: white; padding: 0.625rem 1.25rem;">
+                        🚨 Emergency Contact
+                    </a>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
     
     <!-- Breadcrumb Navigation -->
     {% block breadcrumb %}{% endblock %}
