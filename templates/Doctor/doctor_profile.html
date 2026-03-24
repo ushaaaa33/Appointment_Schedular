@@ -1,8 +1,13 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}Doctor Profile{% endblock %}
 
 {% block content %}
+{% if doctor.profile_image %}
+    <img src="{{ doctor.profile_image.url }}" class="img-fluid rounded-circle" style="width:150px; height:150px; object-fit:cover;">
+{% else %}
+    <img src="{% static 'images/default-doctor.png' %}" class="img-fluid rounded-circle" style="width:150px; height:150px; object-fit:cover;">
+{% endif %}
 <div class="container mt-4">
 
     <div class="card p-4">
