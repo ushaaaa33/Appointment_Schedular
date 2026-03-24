@@ -251,9 +251,16 @@ class Doctor(models.Model):
     # mandip works
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     specialization = models.CharField(max_length=255)
+    bio = models.TextField(blank=True)
+
+    profile_image = models.ImageField(
+        upload_to='doctors/',
+        blank=True,
+        null=True
+    )
 
     def __str__(self):
-        return f"Dr. {self.user.first_name} {self.user.last_name} - {self.specialization}"
+        return f"Dr. {self.user.first_name} {self.user.last_name}"
     
 
 class Education(models.Model):

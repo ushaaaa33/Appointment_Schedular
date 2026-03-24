@@ -81,8 +81,10 @@ class ServiceAdmin(admin.ModelAdmin):
     
     image_preview_large.short_description = 'Current Image Preview'
 
+@admin.register(Doctor)
+class DoctorAdmin(admin.ModelAdmin):
+    list_display = ('user', 'specialization')
 
-admin.site.register(Doctor)
 admin.site.register(Education)
 admin.site.register(Experience)
 admin.site.register(Language)
