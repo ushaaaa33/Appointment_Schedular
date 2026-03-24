@@ -178,7 +178,8 @@ class Doctor(models.Model):
     )
 
     def __str__(self):
-        return f"Dr. {self.user.first_name} {self.user.last_name}"
+        full_name = self.user.get_full_name()
+        return f"Dr. {full_name}" if full_name else f"Dr. {self.user.username}"
     
 
 class Education(models.Model):
@@ -186,6 +187,9 @@ class Education(models.Model):
     degree = models.CharField(max_length=200)
     institution = models.CharField(max_length=200)
     year = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.degree} - {self.doctor}"
 
 
 class Experience(models.Model):
@@ -195,7 +199,12 @@ class Experience(models.Model):
     start_year = models.IntegerField()
     end_year = models.IntegerField(blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.position} at {self.hospital} ({self.doctor})"
 
 class Language(models.Model):
     doctor = models.ForeignKey(Doctor, related_name="languages", on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.name} ({self.doctor})"
