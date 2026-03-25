@@ -3,73 +3,94 @@
 {% block title %}Doctor Profile{% endblock %}
 
 {% block content %}
-{% if doctor.profile_image %}
-    <img src="{{ doctor.profile_image.url }}" class="img-fluid rounded-circle" style="width:150px; height:150px; object-fit:cover;">
-{% else %}
-    <img src="{% static 'images/default-doctor.png' %}" class="img-fluid rounded-circle" style="width:150px; height:150px; object-fit:cover;">
-{% endif %}
 <div class="container mt-4">
 
-    <div class="card p-4">
-        <div class="row">
+    <!-- Doctor Header -->
+    <div class="card p-4 shadow-sm">
+        <div class="row align-items-center">
 
-            <div class="col-md-3">
-               
+            <!-- Profile Image -->
+            <div class="col-md-3 d-flex align-items-center pe-4">
+                {% if doctor.profile_image %}
+                    <img src="{{ doctor.profile_image.url }}" 
+                        class="rounded-circle"
+                        style="width:150px; height:150px; object-fit:cover;">
+                {% else %}
+                    <img src="{{ doctor.profile_image.url }}" 
+                        class="rounded-circle"
+                        style="width:150px; height:150px; object-fit:cover;">
+                {% endif %}
             </div>
 
+            <!-- Doctor Info -->
             <div class="col-md-9">
-                <h2>{{ doctor.name }}</h2>
-                <p><strong>Specialization:</strong> {{ doctor.specialization }}</p>
+                <h2 class="fw-bold mb-1">
+                    Dr. {{ doctor.user.get_full_name }}
+                </h2>
+                <p class="text-muted mb-2">
+                    {{ doctor.specialization }}
+                </p>
+
+                {% if doctor.bio %}
+                    <p>{{ doctor.bio }}</p>
+                {% endif %}
             </div>
 
         </div>
     </div>
 
-    <br>
-
-    <div class="card p-4">
-        <h4>Education</h4>
-        <ul>
+    <!-- Education -->
+    <div class="card p-4 shadow-sm mt-4">
+        <h4 class="fw-semibold mb-3">Education</h4>
+        <ul class="list-group">
             {% for edu in doctor.educations.all %}
-            <li>
-                {{ edu.degree }} - {{ edu.institution }} ({{ edu.year }})
-            </li>
+                <li class="list-group-item">
+                    {{ edu.degree }} - {{ edu.institution }} ({{ edu.year }})
+                </li>
+            {% empty %}
+                <li class="list-group-item">No education details available</li>
             {% endfor %}
         </ul>
     </div>
 
-    <br>
-
-    <div class="card p-4">
-        <h4>Working Experience</h4>
-        <ul>
+    <!-- Experience -->
+    <div class="card p-4 shadow-sm mt-4">
+        <h4 class="fw-semibold mb-3">Working Experience</h4>
+        <ul class="list-group">
             {% for exp in doctor.experiences.all %}
-            <li>
-                {{ exp.position }} - {{ exp.hospital }} ({{ exp.start_year }} - {{ exp.end_year }})
-            </li>
+                <li class="list-group-item">
+                    {{ exp.position }} - {{ exp.hospital }} 
+                    ({{ exp.start_year }} - {{ exp.end_year|default:"Present" }})
+                </li>
+            {% empty %}
+                <li class="list-group-item">No experience available</li>
             {% endfor %}
         </ul>
     </div>
 
-    <br>
+    <!-- Services -->
+    <div class="card p-4 shadow-sm mt-4">
+        <h4 class="fw-semibold mb-3">Services</h4>
+        <ul class="list-group">
+            {% for service in doctor.services.all %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>{{ service.name }}</span>
+                    <strong>${{ service.price }}</strong>
+                </li>
+            {% empty %}
+                <li class="list-group-item">No services available</li>
+            {% endfor %}
+        </ul>
+    </div>
 
-    <h3>Services</h3>
-
-    <ul>
-    {% for service in doctor.services.all %}
-        <li>
-            {{ service.name }} - ${{ service.price }}
-        </li>
-    {% empty %}
-        <li>No services available</li>
-    {% endfor %}
-    </ul>
-
-    <div class="card p-4">
-        <h4>Languages</h4>
-        <ul>
+    <!-- Languages -->
+    <div class="card p-4 shadow-sm mt-4 mb-4">
+        <h4 class="fw-semibold mb-3">Languages</h4>
+        <ul class="list-group">
             {% for language in doctor.languages.all %}
-            <li>{{ language.name }}</li>
+                <li class="list-group-item">{{ language.name }}</li>
+            {% empty %}
+                <li class="list-group-item">No languages listed</li>
             {% endfor %}
         </ul>
     </div>

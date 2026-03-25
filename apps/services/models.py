@@ -6,13 +6,12 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from decimal import Decimal
 import os
-from django.contrib.auth.models import User
 from django.conf import settings
 
 
 def validate_image_size(image):
     """Validate that uploaded image is not too large."""
-    max_size_mb = 5  # Maximum 5MB
+    max_size_mb = 5
     if image.size > max_size_mb * 1024 * 1024:
         raise ValidationError(
             f'Image file too large. Maximum size is {max_size_mb}MB. '
@@ -21,32 +20,13 @@ def validate_image_size(image):
 
 
 def service_image_path(instance, filename):
-    """
-    Generate upload path for service images.
-    Files will be saved as: media/services/service_<id>/<filename>
-    """
     ext = filename.split('.')[-1].lower()
-    # Clean the service name for use in filename
     clean_name = instance.name.lower().replace(' ', '_')
     new_filename = f"{clean_name}_image.{ext}"
     return os.path.join('services', new_filename)
 
 
 class Service(models.Model):
-    """
-    Service model representing different types of services offered.
-    """
-    name = models.CharField(max_length=200)
-    description = models.TextField()
-    doctor = models.ForeignKey(
-        "Doctor",
-        on_delete=models.CASCADE,
-        related_name="services",
-        null=True,
-        blank=True
-    )
-   
-
     CATEGORY_CHOICES = (
         ('consultation', 'Consultation'),
         ('diagnostic', 'Diagnostic & Testing'),
@@ -59,59 +39,47 @@ class Service(models.Model):
         ('other', 'Other Services'),
     )
 
-    name = models.CharField(
-        max_length=200,
-        help_text='Name of the service'
-    )
-    description = models.TextField(
-        help_text='Detailed description of the service'
+    name = models.CharField(max_length=200, help_text='Name of the service')
+    description = models.TextField(help_text='Detailed description')
+    doctor = models.ForeignKey(
+        "Doctor",
+        on_delete=models.CASCADE,
+        related_name="services",
+        null=True,
+        blank=True
     )
     category = models.CharField(
         max_length=50,
         choices=CATEGORY_CHOICES,
-        default='other',
-        help_text='Service category'
+        default='other'
     )
-    duration_minutes = models.PositiveIntegerField(
-        default=30,
-        help_text='Duration of the service in minutes'
-    )
+    duration_minutes = models.PositiveIntegerField(default=30)
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(Decimal('0.01'))],
-        help_text='Price of the service'
+        validators=[MinValueValidator(Decimal('0.01'))]
     )
     image = models.ImageField(
-        upload_to=service_image_path,  # Uses our custom path function
+        upload_to=service_image_path,
         blank=True,
         null=True,
-        validators=[validate_image_size],
-        help_text='Service image (max 5MB, JPG/PNG/WEBP)'
+        validators=[validate_image_size]
     )
-    is_active = models.BooleanField(
-        default=True,
-        help_text='Whether this service is currently available'
-    )
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['name']
-        verbose_name = 'Service'
-        verbose_name_plural = 'Services'
 
     def __str__(self):
         return f"{self.name} (Rs. {self.price})"
 
     def save(self, *args, **kwargs):
-        """Override save to delete old image when updating."""
-        # If updating and image has changed, delete the old one
         if self.pk:
             try:
                 old_instance = Service.objects.get(pk=self.pk)
                 if old_instance.image and old_instance.image != self.image:
-                    # Delete old image file from disk
                     if os.path.isfile(old_instance.image.path):
                         os.remove(old_instance.image.path)
             except Service.DoesNotExist:
@@ -119,39 +87,27 @@ class Service(models.Model):
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        """Override delete to also remove image file."""
-        if self.image:
-            if os.path.isfile(self.image.path):
-                os.remove(self.image.path)
+        if self.image and os.path.isfile(self.image.path):
+            os.remove(self.image.path)
         super().delete(*args, **kwargs)
 
     @property
     def duration_display(self):
-        """Return formatted duration string."""
         hours = self.duration_minutes // 60
         minutes = self.duration_minutes % 60
-        if hours > 0 and minutes > 0:
+        if hours and minutes:
             return f"{hours}h {minutes}m"
-        elif hours > 0:
+        elif hours:
             return f"{hours}h"
-        else:
-            return f"{minutes}m"
+        return f"{minutes}m"
 
     @property
     def image_url(self):
-        """
-        Return image URL or None.
-        Use this in templates instead of service.image.url
-        to avoid errors when no image is uploaded.
-        """
-        if self.image:
-            return self.image.url
-        return None
+        return self.image.url if self.image else None
 
     @property
     def category_icon(self):
-        """Return emoji icon based on category."""
-        icons = {
+        return {
             'consultation': '🩺',
             'diagnostic': '🔬',
             'dental': '🦷',
@@ -161,113 +117,30 @@ class Service(models.Model):
             'wellness': '🥗',
             'emergency': '🚨',
             'other': '🎯',
-        }
-        return icons.get(self.category, '🎯')
-    
-#Doctor Profile
+        }.get(self.category, '🎯')
+
+
+# ---------------- DOCTOR MODELS ---------------- #
 
 class Doctor(models.Model):
-
-    # SPECIALIZATION_CHOICES = [
-    #     ('general', 'General Physician'),
-    #     ('cardiologist', 'Cardiologist'),
-    #     ('dermatologist', 'Dermatologist'),
-    #     ('orthopedic', 'Orthopedic Surgeon'),
-    #     ('pediatrician', 'Pediatrician'),
-    #     ('gynecologist', 'Gynecologist'),
-    #     ('neurologist', 'Neurologist'),
-    #     ('psychiatrist', 'Psychiatrist'),
-    #     ('dentist', 'Dentist'),
-    #     ('ophthalmologist', 'Ophthalmologist'),
-    #     ('ent', 'ENT Specialist'),
-    #     ('urologist', 'Urologist'),
-    # ]
-
-
-    # # Basic info (might already exist - check first!)
-    # name = models.CharField(max_length=200, help_text="Doctor's full name")
-    
-    # specialization = models.CharField(
-    #     max_length=50,
-    #     choices=SPECIALIZATION_CHOICES,
-    #     help_text="Medical specialization"
-    # )
-    
-    # qualification = models.CharField(
-    #     max_length=200,
-    #     help_text="Main qualification - MBBS, MD, MS"
-    # )
-    
-    # consultation_fee = models.DecimalField(
-    #     max_digits=10,
-    #     decimal_places=2,
-    #     validators=[MinValueValidator(Decimal('0.01'))],
-    #     help_text="Consultation fee in Rs"
-    # )
-    
-    # # Additional fields for recommendation system
-    # years_of_experience = models.PositiveIntegerField(
-    #     default=0,
-    #     help_text="Total years of experience"
-    # )
-    
-    # bio = models.TextField(
-    #     blank=True,
-    #     help_text="Doctor's biography (for search/recommendations)"
-    # )
-    
-    # profile_image = models.ImageField(
-    #     upload_to='doctors/profiles/',
-    #     blank=True,
-    #     null=True,
-    #     help_text="Doctor's profile photo"
-    # )
-
-
-    # # ASHISH's FIELDS 
-    # is_available_online = models.BooleanField(
-    #     default=True,
-    #     help_text="Available for online consultations"
-    # )
-    
-    # rating = models.DecimalField(
-    #     max_digits=3,
-    #     decimal_places=2,
-    #     default=0.00,
-    #     validators=[
-    #         MinValueValidator(Decimal('0.00')),
-    #         MaxValueValidator(Decimal('5.00'))
-    #     ],
-    #     help_text="Average rating 0-5"
-    # )
-    
-    # total_reviews = models.PositiveIntegerField(
-    #     default=0,
-    #     help_text="Total reviews count"
-    # )
-
-
-    
-    # mandip works
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     specialization = models.CharField(max_length=255)
     bio = models.TextField(blank=True)
-
-    profile_image = models.ImageField(
-        upload_to='doctors/',
-        blank=True,
-        null=True
-    )
+    profile_image = models.ImageField(upload_to='doctors/', blank=True, null=True)
 
     def __str__(self):
-        return f"Dr. {self.user.first_name} {self.user.last_name}"
-    
+        full_name = self.user.get_full_name()
+        return f"Dr. {full_name}" if full_name else f"Dr. {self.user.username}"
+
 
 class Education(models.Model):
     doctor = models.ForeignKey(Doctor, related_name="educations", on_delete=models.CASCADE)
     degree = models.CharField(max_length=200)
     institution = models.CharField(max_length=200)
     year = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.degree} - {self.doctor}"
 
 
 class Experience(models.Model):
@@ -277,26 +150,13 @@ class Experience(models.Model):
     start_year = models.IntegerField()
     end_year = models.IntegerField(blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.position} at {self.hospital} ({self.doctor})"
+
 
 class Language(models.Model):
     doctor = models.ForeignKey(Doctor, related_name="languages", on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
-# Timestamps
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-    
-#     class Meta:
-#         ordering = ['-rating', 'name']
-    
-#     def __str__(self):
-#         return f"Dr. {self.name} ({self.get_specialization_display()})"
-
-
-#  PROPERTIES - For recommendation system
-    # @property
-    # def experience_display(self):
-    #     """Format years of experience."""
-    #     if self.years_of_experience == 1:
-    #         return "1 year"
-    #     return f"{self.years_of_experience} years"
+    def __str__(self):
+        return f"{self.name} ({self.doctor})"
