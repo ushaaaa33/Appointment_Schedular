@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.accounts.apps.AccountsConfig',
     'apps.appointments.apps.AppointmentsConfig',
     'apps.services.apps.ServicesConfig',
+    'reviews.apps.ReviewsConfig',
 
 ]
 
