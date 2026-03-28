@@ -7,32 +7,59 @@
 
     <!-- Doctor Header -->
     <div class="card p-4 shadow-sm">
-        <div class="row align-items-center">
+        <div class="d-flex align-items-center">
 
             <!-- Profile Image -->
-            <div class="col-md-3 d-flex align-items-center pe-4">
+            <div class="me-4">
                 {% if doctor.profile_image %}
                     <img src="{{ doctor.profile_image.url }}" 
-                        class="rounded-circle"
-                        style="width:150px; height:150px; object-fit:cover;">
+                         class="rounded"
+                         style="width:120px; height:120px; object-fit:cover;">
                 {% else %}
-                    <img src="{{ doctor.profile_image.url }}" 
-                        class="rounded-circle"
-                        style="width:150px; height:150px; object-fit:cover;">
+                    <img src="{% static 'images/default-doctor.png' %}" 
+                         class="rounded"
+                         style="width:120px; height:120px; object-fit:cover;">
                 {% endif %}
             </div>
 
             <!-- Doctor Info -->
-            <div class="col-md-9">
+            <div>
                 <h2 class="fw-bold mb-1">
                     Dr. {{ doctor.user.get_full_name }}
                 </h2>
-                <p class="text-muted mb-2">
+
+                <!-- Google-style Rating -->
+                <div class="d-flex align-items-center mb-2">
+
+                    <!-- Stars -->
+                    <div class="me-2">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= doctor.average_rating %}
+                                <span style="color:#f4c150;">★</span>
+                            {% else %}
+                                <span style="color:#ddd;">★</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Rating Number -->
+                    <span class="fw-semibold">
+                        {{ doctor.average_rating|default:"0.0" }}
+                    </span>
+
+                    <!-- Review Count -->
+                    <span class="text-muted ms-1">
+                        ({{ doctor.reviews.count }} reviews)
+                    </span>
+
+                </div>
+
+                <p class="text-muted mb-1">
                     {{ doctor.specialization }}
                 </p>
 
                 {% if doctor.bio %}
-                    <p>{{ doctor.bio }}</p>
+                    <p class="mb-0">{{ doctor.bio }}</p>
                 {% endif %}
             </div>
 
@@ -81,6 +108,30 @@
                 <li class="list-group-item">No services available</li>
             {% endfor %}
         </ul>
+    </div>
+
+    <!-- Reviews -->
+    <div class="card p-4 shadow-sm mt-4">
+        <h4 class="fw-semibold mb-3">Reviews</h4>
+
+        {% for review in doctor.reviews.all %}
+            <div class="mb-3">
+
+                <div class="d-flex justify-content-between">
+                    <strong>{{ review.patient.username }}</strong>
+                    <span style="color:#f4c150;">⭐ {{ review.rating }}</span>
+                </div>
+
+                {% if review.comment %}
+                    <p class="mb-1">{{ review.comment }}</p>
+                {% endif %}
+
+                <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+            </div>
+            <hr>
+        {% empty %}
+            <p>No reviews yet</p>
+        {% endfor %}
     </div>
 
     <!-- Languages -->
