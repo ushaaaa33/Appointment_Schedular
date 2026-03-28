@@ -28,12 +28,27 @@ def service_image_path(instance, filename):
 
 class Service(models.Model):
     CATEGORY_CHOICES = (
-        ('consultation', 'Consultation'),
-        ('diagnostic', 'Diagnostic & Testing'),
-        ('dental', 'Dental Care'),
-        ('therapy', 'Therapy & Rehabilitation'),
+        # ('consultation', 'Consultation'),
+        # ('diagnostic', 'Diagnostic & Testing'),
+        # ('dental', 'Dental Care'),
+        # ('therapy', 'Therapy & Rehabilitation'),
+        # ('mental_health', 'Mental Health'),
+        # ('specialist', 'Specialist Consultation'),
+
+        ('general_medicine', 'General Medicine'),
+        ('cardiovascular_health', 'Cardiovascular Health'),
+        ('skin_aesthetics', 'Skin & Aesthetics'),
+        ('musculoskeletal_care', 'Musculoskeletal Care'),
+        ('child_health', 'Child Health'),
+        ('womens_health', "Women's Health"),
+        ('brain_nerve_care', 'Brain & Nerve Care'),
         ('mental_health', 'Mental Health'),
-        ('specialist', 'Specialist Consultation'),
+        ('oral_health', 'Oral Health'),
+        # ('eye_vision_care', 'Eye & Vision Care'),
+        ('ear_nose_throat', 'Ear, Nose, & Throat'),
+        ('urinary_renal_care', 'Urinary & Renal Care'),
+        ('respiratory_medicine', 'Respiratory Medicine'),
+
         ('wellness', 'Wellness & Nutrition'),
         ('emergency', 'Emergency Services'),
         ('other', 'Other Services'),
