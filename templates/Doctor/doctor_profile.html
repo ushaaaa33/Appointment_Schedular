@@ -75,7 +75,7 @@
             {% for service in doctor.services.all %}
                 <li class="list-group-item d-flex justify-content-between">
                     <span>{{ service.name }}</span>
-                    <strong>${{ service.price }}</strong>
+                    <strong>Rs {{ service.price }}</strong>
                 </li>
             {% empty %}
                 <li class="list-group-item">No services available</li>
