@@ -156,3 +156,46 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.user}"
+    
+
+class Payment(models.Model):
+
+    class Method(models.TextChoices):
+        ESEWA = "esewa", "eSewa"
+        KHALTI = "khalti", "Khalti"
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        SUCCESS = "success", "Success"
+        FAILED = "failed", "Failed"
+
+    appointment = models.OneToOneField(
+        Appointment,
+        on_delete=models.CASCADE,
+        related_name="payment",
+    )
+
+    method = models.CharField(
+        max_length=20,
+        choices=Method.choices,
+        default=Method.KHALTI
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
+
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # Payment gateway fields (optional initially)
+    transaction_id = models.CharField(max_length=100, null=True, blank=True)
+    pidx = models.CharField(max_length=100, null=True, blank=True)
+
+    paid_at = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Appointment {self.appointment.id} - {self.status}"
