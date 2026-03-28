@@ -185,3 +185,6 @@ REST_FRAMEWORK = {
 # STATIC_URL = '/static/'
 # STATIC_ROOT = BASE_DIR / 'staticfiles'
 # STATICFILES_DIRS = [BASE_DIR / 'static']
+
+KHALTI_SECRET_KEY = "4051982f64504debab499a0ad7781111"
+SITE_URL = "http://localhost:8000"
