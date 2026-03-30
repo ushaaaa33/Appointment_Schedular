@@ -522,3 +522,11 @@ html, body {
     text-align: center;
 }
 
+.star {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+}
+.star.active {
+    color: #f4c150;
+}
