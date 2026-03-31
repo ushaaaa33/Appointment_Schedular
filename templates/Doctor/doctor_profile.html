@@ -28,10 +28,8 @@
                     Dr. {{ doctor.user.get_full_name }}
                 </h2>
 
-                <!-- Google-style Rating -->
+                <!-- Rating -->
                 <div class="d-flex align-items-center mb-2">
-
-                    <!-- Stars -->
                     <div class="me-2">
                         {% for i in "12345" %}
                             {% if forloop.counter <= doctor.average_rating %}
@@ -42,21 +40,16 @@
                         {% endfor %}
                     </div>
 
-                    <!-- Rating Number -->
                     <span class="fw-semibold">
                         {{ doctor.average_rating|default:"0.0" }}
                     </span>
 
-                    <!-- Review Count -->
                     <span class="text-muted ms-1">
                         ({{ doctor.reviews.count }} reviews)
                     </span>
-
                 </div>
 
-                <p class="text-muted mb-1">
-                    {{ doctor.specialization }}
-                </p>
+                <p class="text-muted mb-1">{{ doctor.specialization }}</p>
 
                 {% if doctor.bio %}
                     <p class="mb-0">{{ doctor.bio }}</p>
@@ -110,13 +103,24 @@
         </ul>
     </div>
 
+    <!-- Languages -->
+    <div class="card p-4 shadow-sm mt-4">
+        <h4 class="fw-semibold mb-3">Languages</h4>
+        <ul class="list-group">
+            {% for language in doctor.languages.all %}
+                <li class="list-group-item">{{ language.name }}</li>
+            {% empty %}
+                <li class="list-group-item">No languages listed</li>
+            {% endfor %}
+        </ul>
+    </div>
+
     <!-- Reviews -->
     <div class="card p-4 shadow-sm mt-4">
         <h4 class="fw-semibold mb-3">Reviews</h4>
 
         {% for review in doctor.reviews.all %}
             <div class="mb-3">
-
                 <div class="d-flex justify-content-between">
                     <strong>{{ review.patient.username }}</strong>
                     <span style="color:#f4c150;">⭐ {{ review.rating }}</span>
@@ -134,17 +138,76 @@
         {% endfor %}
     </div>
 
-    <!-- Languages -->
-    <div class="card p-4 shadow-sm mt-4 mb-4">
-        <h4 class="fw-semibold mb-3">Languages</h4>
-        <ul class="list-group">
-            {% for language in doctor.languages.all %}
-                <li class="list-group-item">{{ language.name }}</li>
-            {% empty %}
-                <li class="list-group-item">No languages listed</li>
-            {% endfor %}
-        </ul>
-    </div>
+    <!-- Review Form (UX Protected) -->
+    {% if user.is_authenticated %}
+        {% if has_reviewed %}
+            <div class="alert alert-success mt-4">
+                You have already reviewed this doctor ✔️
+            </div>
+        {% else %}
+            <div class="card p-4 shadow-sm mt-4">
+                <h4 class="mb-3">Write a Review</h4>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <!-- Star Rating -->
+                    <div class="mb-3">
+                        <label class="mb-2">Your Rating:</label><br>
+                        <div id="star-rating">
+                            {% for i in "12345" %}
+                                <span class="star" data-value="{{ forloop.counter }}">★</span>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="rating" id="rating-value">
+                    </div>
+
+                    <!-- Comment -->
+                    <textarea name="comment" class="form-control mb-3"
+                              placeholder="Share your experience..."></textarea>
+
+                    <button type="submit" class="btn btn-primary">
+                        Submit Review
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="mt-3 text-muted">Please login to leave a review</p>
+    {% endif %}
 
 </div>
+
+<!-- JS -->
+<script>
+const stars = document.querySelectorAll('.star');
+const ratingInput = document.getElementById('rating-value');
+
+if (stars && ratingInput) {
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const value = star.getAttribute('data-value');
+            ratingInput.value = value;
+
+            stars.forEach(s => s.classList.remove('active'));
+
+            for (let i = 0; i < value; i++) {
+                stars[i].classList.add('active');
+            }
+        });
+    });
+}
+</script>
+
+<style>
+.star {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+}
+.star.active {
+    color: #f4c150;
+}
+</style>
+
 {% endblock %}
