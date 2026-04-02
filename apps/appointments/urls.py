@@ -15,4 +15,6 @@ urlpatterns = [
     # payment
     path("payment/<int:appointment_id>/", views.khalti_payment, name="khalti_payment"),
     path("payment/response/", views.khalti_payment_response, name="khalti_payment_response"),
+    # receipt
+    path("receipt/<int:appointment_id>/", views.download_receipt, name="download_receipt"),
 ]

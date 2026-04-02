@@ -40,15 +40,15 @@
                         <h4
                             style="color: #64748b; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
                             Date</h4>
-                        <p style="font-size: 1.125rem; font-weight: 600; margin: 0;">{{
-                            appointment.appointment_date|date:"F d, Y" }}</p>
+                        <p style="font-size: 1.125rem; font-weight: 600; margin: 0;">
+                            {{ appointment.appointment_date|date:"F d, Y" }}</p>
                     </div>
                     <div>
                         <h4
                             style="color: #64748b; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
                             Time</h4>
-                        <p style="font-size: 1.125rem; font-weight: 600; margin: 0;">{{
-                            appointment.appointment_time|time:"g:i A" }}</p>
+                        <p style="font-size: 1.125rem; font-weight: 600; margin: 0;">
+                            {{ appointment.appointment_time|time:"g:i A" }}</p>
                     </div>
                 </div>
             </div>
@@ -107,8 +107,11 @@
                 {% if appointment.status == 'pending' %}
                 <a href="{% url 'appointment_update' appointment.pk %}" class="btn btn-secondary">Edit Appointment</a>
                 {% endif %}
-                {% if appointment %}
-                <a href="{% url 'khalti_payment' appointment.id %}" class="btn btn-primary">Pay</a>
+                {% if appointment.payment.status != "success" %}
+                <a href="{% url 'khalti_payment' appointment.id %}" class="btn btn-primary">Pay Now</a>
+                {% elif appointment.payment.status == "success" %}
+                <a href="{% url 'download_receipt' appointment.id %}" target="_blank" class="btn btn-primary">
+                    View Receipt </a>
                 {% endif %}
                 <a href="{% url 'appointment_delete' appointment.pk %}" class="btn btn-danger">Cancel Appointment</a>
                 <a href="{% url 'user_dashboard' %}" class="btn btn-outline">Back to Dashboard</a>
