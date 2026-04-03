@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .models import Appointment, Payment
 from .forms import AppointmentForm
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -16,6 +16,12 @@ from django.conf import settings
 import requests
 from django.db import transaction
 from django.utils import timezone
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import inch
+import qrcode
+from io import BytesIO
 
 
 
@@ -308,3 +314,66 @@ def khalti_payment_response(request):
     print("Payment object:", payment)
 
     return redirect("user_dashboard")
+
+def download_receipt(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id, user=request.user)
+
+    # Ensure payment exists and is successful
+    if not hasattr(appointment, "payment") or appointment.payment.status != "success":
+        return HttpResponse("Payment not completed", status=400)
+
+    payment = appointment.payment
+
+    # Create HTTP response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="receipt_{appointment.id}.pdf"'
+
+    # Create PDF
+    doc = SimpleDocTemplate(response, pagesize=A4)
+    styles = getSampleStyleSheet()
+    elements = []
+
+    # Title
+    elements.append(Paragraph("Appointment Payment Receipt", styles['Title']))
+    elements.append(Spacer(1, 12))
+
+    # Appointment details
+    elements.append(Paragraph(f"User: {appointment.user.username}", styles['Normal']))
+    elements.append(Paragraph(f"Service: {appointment.service.name}", styles['Normal']))
+    elements.append(Paragraph(f"Date: {appointment.appointment_date}", styles['Normal']))
+    elements.append(Paragraph(f"Time: {appointment.appointment_time}", styles['Normal']))
+    elements.append(Spacer(1, 12))
+
+    # Payment details
+    elements.append(Paragraph(f"Amount: Rs. {payment.amount}", styles['Normal']))
+    elements.append(Paragraph(f"Status: {payment.status}", styles['Normal']))
+    elements.append(Paragraph(f"Transaction ID: {payment.transaction_id}", styles['Normal']))
+    elements.append(Spacer(1, 20))
+
+    # 🔥 Create QR Code
+    qr_data = f"""
+    Appointment ID: {appointment.id}
+    User: {appointment.user.username}
+    Service: {appointment.service.name}
+    Amount: {payment.amount}
+    Transaction ID: {payment.transaction_id}
+    Status: {payment.status}
+    """
+
+    qr = qrcode.make(qr_data)
+
+    # Save QR to memory
+    buffer = BytesIO()
+    qr.save(buffer)
+    buffer.seek(0)
+
+    # Add QR to PDF
+    qr_image = Image(buffer, 2 * inch, 2 * inch)
+    elements.append(Paragraph("Scan for Verification:", styles['Normal']))
+    elements.append(Spacer(1, 10))
+    elements.append(qr_image)
+
+    # Build PDF
+    doc.build(elements)
+
+    return response
