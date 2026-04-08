@@ -26,9 +26,9 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.patient} → {self.doctor} ({self.rating}⭐)"
     
-@property
-def average_rating(self):
-    reviews = self.reviews.all()
-    if reviews.exists():
-        return round(sum(r.rating for r in reviews) / reviews.count(), 1)
-    return 0
+    @property
+    def average_rating(self):
+        reviews = self.reviews.all()
+        if reviews.exists():
+            return round(sum(r.rating for r in reviews) / reviews.count(), 1)
+        return 0
