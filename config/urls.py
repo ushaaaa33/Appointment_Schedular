@@ -10,6 +10,7 @@ urlpatterns = [
     path('accounts/', include('apps.accounts.urls')),
     path('services/', include('apps.services.urls')),
     path('appointments/', include('apps.appointments.urls')),
+    path('notifications/', include('apps.notifications.urls')), 
     # path('doctors/', include('doctors.urls')), REMOVED: Invalid URL (BUG FIX)
     
 ]

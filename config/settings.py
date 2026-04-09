@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.accounts.apps.AccountsConfig',
     'apps.appointments.apps.AppointmentsConfig',
     'apps.services.apps.ServicesConfig',
+    'apps.notifications.apps.NotificationsConfig',
 # 'doctors', REMOVED: Invalid app - directory does not exist (PRIMARY BUG FIX)
 ]
 
