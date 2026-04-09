@@ -26,6 +26,9 @@ SECRET_KEY = 'django-insecure-=0h(&^_h=&b^fmrb)4d*n!7!1d4m!8(r^^7ej)xrkr7zxbj7(&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 ALLOWED_HOSTS = ["*"]
+# DEBUG = True
+
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']  # BUG FIX: Enable dev server binding
 
 
 # Application definition
@@ -45,7 +48,7 @@ INSTALLED_APPS = [
     'apps.accounts.apps.AccountsConfig',
     'apps.appointments.apps.AppointmentsConfig',
     'apps.services.apps.ServicesConfig',
-
+# 'doctors', REMOVED: Invalid app - directory does not exist (PRIMARY BUG FIX)
 ]
 
 MIDDLEWARE = [
@@ -131,7 +134,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'

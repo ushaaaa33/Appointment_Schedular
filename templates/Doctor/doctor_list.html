@@ -1,26 +1,251 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid px-4 mt-4">
 
-<h2>Our Doctors</h2>
-
-<div class="row">
-{% for doctor in doctors %}
-
-<div class="col-md-4">
-    <div class="card p-3">
-        <h4>{{ doctor.name }}</h4>
-        <p>{{ doctor.specialization }}</p>
-
-        <a href="{% url 'doctor_profile' doctor.id %}" class="btn btn-primary">
-            View Profile
-        </a>
+  <!-- Search & Filter Bar -->
+  <div style="display:flex; align-items:center; gap:16px; margin-bottom:28px; flex-wrap:wrap;">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <label style="font-weight:600; white-space:nowrap; font-size:15px;">Find By Speciality:</label>
+      <select id="specialitySelect"
+              style="padding:8px 36px 8px 14px; border:1.5px solid #d1d5db;
+                     border-radius:8px; font-size:14px; background:#fff;
+                     min-width:220px; cursor:pointer; appearance:auto;">
+        <option value="">All Speciality</option>
+        {% for s in specialities %}
+          <option value="{{ s }}" {% if s == selected_speciality %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
     </div>
-</div>
 
-{% endfor %}
-</div>
+    <form method="get" style="margin-left:auto; display:flex; max-width:340px; width:100%;">
+      <input type="hidden" name="speciality" value="{{ selected_speciality }}">
+      <input type="text" name="search" placeholder="Find Doctor"
+             value="{{ search_query }}"
+             style="flex:1; padding:9px 14px; border:1.5px solid #d1d5db;
+                    border-radius:8px 0 0 8px; font-size:14px; outline:none;">
+      <button type="submit"
+              style="padding:9px 18px; background:#e11d48; border:none;
+                     border-radius:0 8px 8px 0; cursor:pointer; color:#fff; font-size:15px;">
+        &#128269;
+      </button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('specialitySelect').addEventListener('change', function () {
+      const url = new URL(window.location.href);
+      url.searchParams.set('speciality', this.value);
+      window.location.href = url.toString();
+    });
+  </script>
+
+  <!-- Doctor Cards -->
+  {% for doctor in doctors %}
+  <div style="
+      background:#fff;
+      border:1.5px solid #e5e7eb;
+      border-radius:12px;
+      overflow:hidden;
+      margin-bottom:24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      transition: box-shadow .2s;
+  " onmouseover="this.style.boxShadow='0 8px 24px rgba(0,0,0,.1)'"
+     onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)'">
+
+    <div style="display:flex; min-height:260px;">
+
+      <!-- ===== LEFT PANEL ===== -->
+      <div style="
+          width:290px; min-width:290px;
+          padding:28px 24px;
+          border-right:1.5px solid #e5e7eb;
+          display:flex; flex-direction:column;
+          justify-content:space-between;
+          background:#fff;
+      ">
+        <div>
+          <!-- Avatar + Name row -->
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+            <div style="flex-shrink:0;">
+              {% if doctor.profile_image %}
+                <img src="{{ doctor.profile_image.url }}"
+                     style="width:80px;height:80px;object-fit:cover;
+                            border-radius:50%;border:2.5px solid #e5e7eb;">
+              {% else %}
+                <img src="{% static 'images/default-doctor.png' %}"
+                     style="width:80px;height:80px;object-fit:cover;
+                            border-radius:50%;border:2.5px solid #e5e7eb;">
+              {% endif %}
+            </div>
+            <div>
+              <p style="font-weight:700; font-size:16px; margin:0 0 5px; color:#111;">
+                Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}
+              </p>
+              <p style="font-size:13px; color:#6b7280; margin:0 0 4px;
+                        display:flex; align-items:center; gap:5px;">
+                <span style="color:#e11d48; font-size:9px;">&#9654;</span>
+                {{ doctor.specialization }}
+              </p>
+              {% if doctor.experience %}
+              <p style="font-size:13px; color:#6b7280; margin:0;
+                        display:flex; align-items:center; gap:5px;">
+                <span style="color:#e11d48; font-size:9px;">&#9654;</span>
+                Experience: {{ doctor.experience }} years
+              </p>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Star Rating -->
+          <div style="display:flex; align-items:center; gap:3px; margin-bottom:4px;">
+            {% for i in "12345" %}
+              {% if forloop.counter <= doctor.average_rating %}
+                <span style="color:#f59e0b; font-size:16px; line-height:1;">★</span>
+              {% else %}
+                <span style="color:#d1d5db; font-size:16px; line-height:1;">★</span>
+              {% endif %}
+            {% endfor %}
+            <span style="font-size:12px; color:#9ca3af; margin-left:5px;">
+              {{ doctor.average_rating|default:"0.0" }}
+              ({{ doctor.reviews.count }} reviews)
+            </span>
+          </div>
+        </div>
+
+        <!-- View Profile Button -->
+        <a href="{% url 'doctor_profile' doctor.id %}"
+           style="
+             display:inline-flex; align-items:center; gap:4px;
+             margin-top:16px; padding:8px 20px;
+             border:1.5px solid #e11d48; color:#e11d48;
+             border-radius:7px; font-size:13px; font-weight:600;
+             text-decoration:none; width:fit-content;
+             transition: all .15s;
+           "
+           onmouseover="this.style.background='#e11d48';this.style.color='#fff'"
+           onmouseout="this.style.background='transparent';this.style.color='#e11d48'">
+          View Profile &rsaquo;
+        </a>
+      </div>
+
+      <!-- ===== RIGHT PANEL ===== -->
+      <div style="flex:1; display:flex; flex-direction:column; min-width:0;">
+
+        <!-- 2×2 info grid -->
+        <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;">
+
+          <!-- Education -->
+          <div style="padding:20px 24px; border-right:1px solid #e5e7eb; border-bottom:1px solid #e5e7eb;">
+            <p style="font-size:11px; font-weight:700; text-transform:uppercase;
+                      letter-spacing:.7px; color:#9ca3af; margin:0 0 12px;">
+              Education
+            </p>
+            {% for edu in doctor.educations.all|slice:":2" %}
+              <div style="display:flex; gap:8px; margin-bottom:8px; align-items:flex-start;">
+                <span style="color:#e11d48; font-size:9px; margin-top:5px; flex-shrink:0;">&#9654;</span>
+                <div>
+                  <p style="font-size:13px; font-weight:600; margin:0; color:#111;">{{ edu.degree }}</p>
+                  <p style="font-size:12px; color:#6b7280; margin:2px 0 0;">
+                    {{ edu.institution }}{% if edu.year %} ({{ edu.year }}){% endif %}
+                  </p>
+                </div>
+              </div>
+            {% empty %}
+              <p style="font-size:13px; color:#9ca3af; margin:0;">Not listed</p>
+            {% endfor %}
+          </div>
+
+          <!-- Experience -->
+          <div style="padding:20px 24px; border-bottom:1px solid #e5e7eb;">
+            <p style="font-size:11px; font-weight:700; text-transform:uppercase;
+                      letter-spacing:.7px; color:#9ca3af; margin:0 0 12px;">
+              Experience
+            </p>
+            {% for exp in doctor.experiences.all|slice:":2" %}
+              <div style="display:flex; gap:8px; margin-bottom:8px; align-items:flex-start;">
+                <span style="color:#e11d48; font-size:9px; margin-top:5px; flex-shrink:0;">&#9654;</span>
+                <div>
+                  <p style="font-size:13px; font-weight:600; margin:0; color:#111;">{{ exp.position }}</p>
+                  <p style="font-size:12px; color:#6b7280; margin:2px 0 0;">
+                    {{ exp.hospital }} &mdash; {{ exp.start_year }}–{{ exp.end_year|default:"Present" }}
+                  </p>
+                </div>
+              </div>
+            {% empty %}
+              <p style="font-size:13px; color:#9ca3af; margin:0;">Not listed</p>
+            {% endfor %}
+          </div>
+
+          <!-- Services -->
+          <div style="padding:20px 24px; border-right:1px solid #e5e7eb;">
+            <p style="font-size:11px; font-weight:700; text-transform:uppercase;
+                      letter-spacing:.7px; color:#9ca3af; margin:0 0 12px;">
+              Services
+            </p>
+            {% for service in doctor.services.all|slice:":3" %}
+              <div style="display:flex; justify-content:space-between;
+                          align-items:center; margin-bottom:8px;">
+                <span style="font-size:13px; color:#111;
+                             display:flex; align-items:center; gap:6px;">
+                  <span style="color:#e11d48; font-size:9px;">&#9654;</span>
+                  {{ service.name }}
+                </span>
+                <span style="
+                  font-size:12px; font-weight:600; padding:3px 10px;
+                  background:#f9fafb; border:1px solid #e5e7eb;
+                  border-radius:5px; color:#374151;
+                  white-space:nowrap; margin-left:10px;">
+                  Rs {{ service.price }}
+                </span>
+              </div>
+            {% empty %}
+              <p style="font-size:13px; color:#9ca3af; margin:0;">Not listed</p>
+            {% endfor %}
+          </div>
+
+          <!-- Languages -->
+          <div style="padding:20px 24px;">
+            <p style="font-size:11px; font-weight:700; text-transform:uppercase;
+                      letter-spacing:.7px; color:#9ca3af; margin:0 0 12px;">
+              Languages
+            </p>
+            {% for language in doctor.languages.all %}
+              <div style="display:flex; align-items:center; gap:6px; margin-bottom:7px;">
+                <span style="color:#e11d48; font-size:9px;">&#9654;</span>
+                <span style="font-size:13px; color:#111;">{{ language.name }}</span>
+              </div>
+            {% empty %}
+              <p style="font-size:13px; color:#9ca3af; margin:0;">Not listed</p>
+            {% endfor %}
+          </div>
+
+        </div>
+
+        <!-- Bottom CTA -->
+        <a href="{% url 'doctor_profile' doctor.id %}"
+           style="
+             display:flex; align-items:center; justify-content:center; gap:8px;
+             background:#e11d48; color:#fff; text-decoration:none;
+             padding:13px 24px; font-weight:600; font-size:14px;
+             letter-spacing:.2px;
+             transition: background .15s;
+           "
+           onmouseover="this.style.background='#be123c'"
+           onmouseout="this.style.background='#e11d48'">
+          Get More Information &rarr;
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  {% empty %}
+  <div style="text-align:center; padding:80px 0; color:#9ca3af; font-size:15px;">
+    No doctors found.
+  </div>
+  {% endfor %}
 
 </div>
 {% endblock %}

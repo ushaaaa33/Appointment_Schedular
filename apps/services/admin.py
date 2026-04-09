@@ -81,8 +81,22 @@ class ServiceAdmin(admin.ModelAdmin):
     
     image_preview_large.short_description = 'Current Image Preview'
 
+@admin.register(Doctor)
+class DoctorAdmin(admin.ModelAdmin):
+    list_display = ('user', 'specialization')
 
-admin.site.register(Doctor)
-admin.site.register(Education)
-admin.site.register(Experience)
-admin.site.register(Language)
+@admin.register(Education)
+class EducationAdmin(admin.ModelAdmin):
+    list_display = ('doctor', 'degree', 'institution', 'year')
+    search_fields = ('doctor__user__first_name', 'doctor__user__last_name')
+
+
+@admin.register(Experience)
+class ExperienceAdmin(admin.ModelAdmin):
+    list_display = ('doctor', 'position', 'hospital', 'start_year', 'end_year')
+
+
+@admin.register(Language)
+class LanguageAdmin(admin.ModelAdmin):
+    list_display = ('doctor', 'name')
+    
