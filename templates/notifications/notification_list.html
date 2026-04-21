@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - AppointEase{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 3rem; margin-bottom: 3rem;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1>🔔 Notifications</h1>
+            {% if unread_count > 0 %}
+                <a href="{% url 'mark_all_notifications_read' %}" class="btn btn-secondary">
+                    ✓ Mark All as Read
+                </a>
+            {% endif %}
+        </div>
+        
+        {% if notifications %}
+            {% for notification in notifications %}
+                <a href="{% url 'mark_notification_read' notification.id %}" 
+                   style="display: block; text-decoration: none; color: inherit; margin-bottom: 1rem;">
+                    <div style="
+                        background: {% if notification.is_read %}#f8fafc{% else %}#dbeafe{% endif %};
+                        border-left: 4px solid {% if notification.is_read %}#e2e8f0{% else %}#3b82f6{% endif %};
+                        padding: 1.5rem;
+                        border-radius: 0.5rem;
+                        transition: all 0.2s;
+                    " onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" 
+                       onmouseout="this.style.boxShadow='none'">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                            <h3 style="margin: 0; font-size: 1.125rem;">
+                                {{ notification.title }}
+                            </h3>
+                            {% if not notification.is_read %}
+                                <span style="background: #3b82f6; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600;">
+                                    NEW
+                                </span>
+                            {% endif %}
+                        </div>
+                        <p style="color: #64748b; margin: 0.5rem 0;">
+                            {{ notification.message }}
+                        </p>
+                        <p style="color: #94a3b8; font-size: 0.875rem; margin: 0;">
+                            {{ notification.created_at|timesince }} ago
+                        </p>
+                    </div>
+                </a>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 4rem 2rem; background: white; border-radius: 1rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+                <h3>No Notifications</h3>
+                <p style="color: #64748b;">You're all caught up!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

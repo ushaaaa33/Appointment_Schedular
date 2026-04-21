@@ -12,6 +12,8 @@ __pycache__/
 
 #environment variables
 .env
+.env
+
 
 #django
 db.sqlite3

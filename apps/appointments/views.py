@@ -1,7 +1,3 @@
-"""
-Views for appointment management.
-Includes CRUD operations and status management.
-"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -23,6 +19,12 @@ from reportlab.lib.units import inch
 import qrcode
 from io import BytesIO
 
+# ✅ ADD THIS IMPORT
+from apps.notifications.utils import (
+    notify_appointment_approved,
+    notify_appointment_cancelled,
+    notify_appointment_rejected
+)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -116,10 +118,17 @@ class AppointmentDeleteView(DeleteView):
         return Appointment.objects.filter(user=self.request.user)
     
     def delete(self, request, *args, **kwargs):
-        messages.success(request, 'Appointment cancelled successfully.')
+        # ✅ UPDATED: Get appointment before deleting
+        appointment = self.get_object()
+        
+        # ✅ Send notification before deletion
+        notify_appointment_cancelled(appointment)
+        
+        messages.success(request, 'Appointment cancelled successfully. You will receive a confirmation email.')
         return super().delete(request, *args, **kwargs)
 
 
+# ✅ UPDATED: Approve function with email notification
 @login_required
 def appointment_approve(request, pk):
     """Quick approve appointment (admin only)."""
@@ -132,10 +141,14 @@ def appointment_approve(request, pk):
     appointment.status = 'approved'
     appointment.save()
     
-    messages.success(request, 'Appointment approved successfully!')
+    # ✅ Send notification (database + email)
+    notify_appointment_approved(appointment)
+    
+    messages.success(request, 'Appointment approved! User has been notified via email.')
     return redirect('admin_dashboard')
 
 
+# ✅ UPDATED: Reject function with email notification
 @login_required
 def appointment_reject(request, pk):
     """Quick reject appointment (admin only)."""
@@ -148,9 +161,14 @@ def appointment_reject(request, pk):
     appointment.status = 'rejected'
     appointment.save()
     
-    messages.success(request, 'Appointment rejected.')
+    # ✅ Send notification (database + email)
+    notify_appointment_rejected(appointment)
+    
+    messages.warning(request, 'Appointment rejected. User has been notified via email.')
     return redirect('admin_dashboard')
 
+
+# ✅ EXISTING: Khalti payment functions (no changes needed)
 @login_required
 def khalti_payment(request, appointment_id):
     
@@ -302,18 +320,22 @@ def khalti_payment_response(request):
 
             # 🔥 IMPORTANT: Update appointment
             appointment = payment.appointment
-            appointment.status = "approved"  # or confirmed
+            appointment.status = "approved"
             appointment.save(update_fields=["status"])
+            
+            # ✅ NEW: Send approval notification after successful payment
+            notify_appointment_approved(appointment)
 
     except Exception:
         messages.error(request, "Something went wrong.")
         return redirect("user_dashboard")
 
-    # ✅ THIS IS YOUR TASK REQUIREMENT
-    messages.success(request, "Payment successful. Appointment confirmed.")
+    # ✅ Updated success message
+    messages.success(request, "Payment successful! Appointment confirmed. You will receive a confirmation email.")
     print("Payment object:", payment)
 
     return redirect("user_dashboard")
+
 
 def download_receipt(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, user=request.user)
