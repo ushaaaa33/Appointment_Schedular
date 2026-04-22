@@ -15,7 +15,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth.forms import PasswordChangeForm
 from apps.services.models import Service
 from .models import User
-from apps.appointments.models import Appointment, Notification
+from apps.appointments.models import Appointment
+from apps.notifications.models import Notification
 from .forms import (
     UserRegistrationForm,
     UserLoginForm,

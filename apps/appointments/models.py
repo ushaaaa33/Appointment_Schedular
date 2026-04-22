@@ -3,11 +3,11 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from apps.services.models import Service
-from django.contrib import messages
 
 
 class Weekday(models.Model):
-    # To set multiple days for the appointments
+    """Weekday model for time slots."""
+    
     WEEKDAY_CHOICES = [
         (0, "Monday"),
         (1, "Tuesday"),
@@ -25,8 +25,8 @@ class Weekday(models.Model):
 
 
 class TimeSlot(models.Model):
-    # TimeSlot model for managing available booking times
-
+    """TimeSlot model for managing available booking times."""
+    
     service = models.ForeignKey(
         Service,
         on_delete=models.CASCADE,
@@ -46,6 +46,7 @@ class TimeSlot(models.Model):
     def __str__(self):
         days = ", ".join([str(day) for day in self.day_of_week.all()])
         return f"{self.service.name} - {days}"
+
 
 class Appointment(models.Model):
     """Appointment model for managing user bookings."""
@@ -89,30 +90,6 @@ class Appointment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        old_status = None
-
-        if not is_new:
-            old_status = Appointment.objects.get(pk=self.pk).status
-        super().save(*args, **kwargs)
-
-        # Trigger notification only if status changed
-        if not is_new and old_status != self.status:
-            Notification.objects.create(user=self.user, message=f"Your appointment has been {self.status}.")
-    
-    def create_status_notification(self):
-        messages = {
-            'approved': f"Your appointment for {self.service.name} has been approved.",
-            'rejected': f"Your appointment for {self.service.name} was rejected.",
-            'completed': f"Your appointment for {self.service.name} is completed.",
-            'cancelled': f"Your appointment for {self.service.name} was cancelled.",
-        }
-
-        message = messages.get(self.status)
-        if message:
-            Notification.objects.create(user=self.user, message=message)
-    
     class Meta:
         ordering = ['-appointment_date', '-appointment_time']
         verbose_name = 'Appointment'
@@ -144,22 +121,13 @@ class Appointment(models.Model):
         return colors.get(self.status, 'secondary')
 
 
-class Notification(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='notifications'
-    )
-    message = models.TextField()
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+# REMOVED: Old Notification model deleted
+# Now using apps.notifications.models.Notification
 
-    def __str__(self):
-        return f"Notification for {self.user}"
-    
 
 class Payment(models.Model):
-
+    """Payment model for handling transactions."""
+    
     class Method(models.TextChoices):
         ESEWA = "esewa", "eSewa"
         KHALTI = "khalti", "Khalti"
@@ -189,12 +157,11 @@ class Payment(models.Model):
 
     amount = models.DecimalField(max_digits=10, decimal_places=2)
 
-    # Payment gateway fields (optional initially)
+    # Payment gateway fields
     transaction_id = models.CharField(max_length=100, null=True, blank=True)
     pidx = models.CharField(max_length=100, null=True, blank=True)
 
     paid_at = models.DateTimeField(null=True, blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

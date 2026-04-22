@@ -52,7 +52,7 @@
     </div>
 
     <!-- Quick Actions -->
-    <div class="card mb-2">
+    <!-- <div class="card mb-2">
         <div class="card-header">
             <h3 style="margin: 0;">Quick Actions</h3>
         </div>
@@ -63,7 +63,42 @@
                 <a href="{% url 'appointment_list' %}" class="btn btn-secondary">📋 View All Appointments</a>
             </div>
         </div>
+    </div> -->
+
+    <!-- Quick Actions -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h3 style="margin: 0;">Quick Actions</h3>
     </div>
+    <div class="card-body">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <!-- ✅ FIXED: Added explicit color styles -->
+            <a href="{% url 'appointment_create' %}" 
+               class="btn btn-primary" 
+               style="background: #3b82f6; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; transition: all 0.2s;"
+               onmouseover="this.style.background='#2563eb'; this.style.color='white';" 
+               onmouseout="this.style.background='#3b82f6'; this.style.color='white';">
+                📅 Book New Appointment
+            </a>
+            
+            <a href="{% url 'service_list' %}" 
+               class="btn btn-outline" 
+               style="background: white; color: #3b82f6; border: 2px solid #3b82f6; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; transition: all 0.2s;"
+               onmouseover="this.style.background='#eff6ff'; this.style.color='#2563eb';" 
+               onmouseout="this.style.background='white'; this.style.color='#3b82f6';">
+                🔍 Browse Services
+            </a>
+            
+            <a href="{% url 'appointment_list' %}" 
+               class="btn btn-secondary" 
+               style="background: #64748b; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; transition: all 0.2s;"
+               onmouseover="this.style.background='#475569'; this.style.color='white';" 
+               onmouseout="this.style.background='#64748b'; this.style.color='white';">
+                📋 View All Appointments
+            </a>
+        </div>
+    </div>
+</div>
 
     <!-- Recent Appointments -->
     <div class="card">
