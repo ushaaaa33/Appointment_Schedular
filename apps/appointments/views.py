@@ -228,7 +228,6 @@ def khalti_payment(request, appointment_id):
     return redirect(payment_url)
 
 
-@login_required
 def khalti_payment_response(request):
     print("🔥 Khalti response view hit")
     
