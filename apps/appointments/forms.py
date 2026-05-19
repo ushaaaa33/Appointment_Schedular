@@ -56,7 +56,7 @@ class AppointmentForm(forms.ModelForm):
 
         # TimeSlot validation
         if service and date and time:
-            weekday = date.weekday()  # Monday=0, Sunday=6
+            weekday = date.weekday() # Monday=0, Sunday=6
 
             # Get all available TimeSlots for this service on this day
             slots = TimeSlot.objects.filter(
@@ -67,6 +67,7 @@ class AppointmentForm(forms.ModelForm):
 
             # Check if appointment time fits in any slot
             valid_slot = None
+
             for slot in slots:
                 if slot.start_time <= time < slot.end_time:
                     # Check if max appointments reached
